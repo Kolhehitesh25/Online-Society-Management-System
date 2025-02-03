@@ -24,4 +24,5 @@ public class DemoApplication {
 		.setPropertyCondition(Conditions.isNotNull());
 		return mapper;
 	}
+	//soham
 }

@@ -24,14 +24,13 @@ const Login = () => {
     }
   };
 
-  const handleRegisterRedirect=()=>{
-    if(role==="staff"){
-      navigate('/register/staff')
+  const handleRegisterRedirect = () => {
+    if (role === "staff") {
+      navigate("/register/staff");
+    } else if (role === "resident") {
+      navigate("/register/resident");
     }
-    else if(role==="resident"){
-      navigate('/register/resident')
-    }
-  }
+  };
 
   return (
     <div
@@ -53,7 +52,7 @@ const Login = () => {
           boxShadow: "0 5px 8px rgba(0, 0, 0, 0.2)",
         }}
       >
-        <h2 className="text-center mb-4" >Login</h2>
+        <h2 className="text-center mb-4">Login</h2>
         <form onSubmit={handleLogin}>
           <div className="mb-3">
             <label htmlFor="email" className="form-label">
@@ -131,7 +130,16 @@ const Login = () => {
         </form>
 
         <p className="text-center mt-3">
-          Don't have an account? <Link onClick={handleRegisterRedirect}>Register here</Link>
+          Don't have an account?{" "}
+          <Link
+            to="#"
+            onClick={(e) => {
+              e.preventDefault();
+              handleRegisterRedirect();
+            }}
+          >
+            Register here
+          </Link>
         </p>
         <p className="text-center mt-3">
           <a href="/forgot-password">Forgot your password?</a>

@@ -1,0 +1,54 @@
+General Styles
+/* body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f9;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+} */
+
+
+/* Custom CSS for Navbar */
+.navbar-brand{
+color: aqua;
+}
+.navbar-brand:hover {
+  color: #b5ef37 !important; /* Change to your preferred hover color */
+}
+
+.nav-link:hover {
+  color:orange !important; /* Change to your preferred hover color */
+  transition: color 0.3s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #343a40; /* Dark background on hover */
+  color: #baedef !important;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+
+/* homepagebg */
+.background-container {
+  width: 100vw;
+  /* position: fixed; */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;
+}
+
+
+/* log0 */
+.logo{
+  font-family: "Playwrite IN", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  padding-left: 30px;
+  padding-top: 4px;
+
+}

@@ -128,11 +128,12 @@ const Login = () => {
             </button>
           </div>
         </form>
+        
 
         <p className="text-center mt-3">
           Don't have an account?{" "}
           <Link
-            to="#"
+            to=""
             onClick={(e) => {
               e.preventDefault();
               handleRegisterRedirect();

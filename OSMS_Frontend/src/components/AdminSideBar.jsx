@@ -10,9 +10,11 @@ import {
   FaCalendarCheck,
   FaTasks,
 } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const AdminSideBar = () => {
+  const location = useLocation();
+
   return (
     <div className="d-flex ">
       {/* Sidebar */}
@@ -34,39 +36,79 @@ const AdminSideBar = () => {
             textDecoration: "underline",
           }}
         >
-          {" "}
-          Admin{" "}
+          Admin
         </h2>
         <Nav className="flex-column">
-          <Nav.Link as={Link} to='/admin' className="text-light">
+          <Nav.Link
+            as={Link}
+            to="/admin"
+            replace={false}
+            className={
+              location.pathname === "/admin" ? "text-warning" : "text-light"
+            }
+          >
             <FaHome className="me-2" /> Dashboard
           </Nav.Link>
           <hr />
 
-          <Nav.Link  className="text-light pb-3">
+          <Nav.Link
+            as={Link}
+            to="/admin/residents"
+            replace={false}
+            className={
+              location.pathname === "/admin/residents"
+                ? "text-warning"
+                : "text-light"
+            }
+          >
             <FaUser className="me-2" /> Resident
           </Nav.Link>
 
-          <Nav.Link  className="text-light pb-3">
-            <FaUser className="me-2" /> staff
+          <Nav.Link
+            as={Link}
+            to="/admin/staffs"
+            replace={false}
+            className={
+              location.pathname === "/admin/staffs"
+                ? "text-warning"
+                : "text-light"
+            }
+          >
+            <FaUser className="me-2" /> Staff
           </Nav.Link>
-          <Nav.Link  className="text-light pb-3">
+
+
+          <Nav.Link  as ={Link} to="/admin/add-task" className={
+              location.pathname === "/admin/add-task"
+                ? "text-warning"
+                : "text-light"
+            }>
             <FaTasks className="me-2" /> Add Task
           </Nav.Link>
 
-          <Nav.Link  className="text-light v">
-            <FaMoneyBill className="me-2" /> Finance Record
+          <Nav.Link  as ={Link} to="/admin/financial-record" className={
+              location.pathname === "/admin/financial-record"
+                ? "text-warning"
+                : "text-light"
+            }>
+            <FaTasks className="me-2" /> Financial Record
           </Nav.Link>
-          <Nav.Link  className="text-light pb-3">
+
+          <Nav.Link className="text-light pb-3">
             <FaCommentDots className="me-2" /> Complaints
           </Nav.Link>
 
-          <Nav.Link  className="text-light pb-3">
-            <FaCalendarCheck className="me-2" /> Facility Booking
+          <Nav.Link  as ={Link} to="/admin/facility-booking" className={
+              location.pathname === "/admin/facility-booking"
+                ? "text-warning"
+                : "text-light"
+            }>
+            <FaTasks className="me-2" /> Facility Booking
           </Nav.Link>
-          <Nav.Link  className="text-light pb-3">
+
+          <Nav.Link className="text-light pb-3">
             <FaBellSlash className="me-2" />
-            Send Notification{" "}
+            Send Notification
           </Nav.Link>
         </Nav>
       </div>

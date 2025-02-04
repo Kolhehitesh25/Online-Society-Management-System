@@ -86,16 +86,26 @@ const AdminSideBar = () => {
             <FaTasks className="me-2" /> Add Task
           </Nav.Link>
 
-          <Nav.Link className="text-light v">
-            <FaMoneyBill className="me-2" /> Finance Record
+          <Nav.Link  as ={Link} to="/admin/financial-record" className={
+              location.pathname === "/admin/financial-record"
+                ? "text-warning"
+                : "text-light"
+            }>
+            <FaTasks className="me-2" /> Financial Record
           </Nav.Link>
+
           <Nav.Link className="text-light pb-3">
             <FaCommentDots className="me-2" /> Complaints
           </Nav.Link>
 
-          <Nav.Link className="text-light pb-3">
-            <FaCalendarCheck className="me-2" /> Facility Booking
+          <Nav.Link  as ={Link} to="/admin/facility-booking" className={
+              location.pathname === "/admin/facility-booking"
+                ? "text-warning"
+                : "text-light"
+            }>
+            <FaTasks className="me-2" /> Facility Booking
           </Nav.Link>
+
           <Nav.Link className="text-light pb-3">
             <FaBellSlash className="me-2" />
             Send Notification

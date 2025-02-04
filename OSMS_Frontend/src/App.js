@@ -23,6 +23,8 @@ import AdminDashboardData from "./components/UserData/AdminDashboardData";
 import StaffData from "./components/UserData/StaffData";
 import AddTask from "./components/AddTask";
 import UpdateProfile from "./components/UpdateProfiles/UpdateProfile";
+import FinancialRecord from "./components/FinancialRecord";
+import FacilityBooking from "./components/FacilityBooking";
 
 
 function App() {
@@ -47,6 +49,8 @@ function App() {
           <Route path="residents" element={<Residentdata />} />
           <Route path="staffs" element={<StaffData/>} />
           <Route path="add-task" element={<AddTask/>} />
+          <Route path="financial-record" element={<FinancialRecord/>} />
+          <Route path="facility-booking" element={<FacilityBooking/>} />
 
           
 

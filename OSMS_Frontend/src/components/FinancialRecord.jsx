@@ -10,7 +10,7 @@ const FinancialRecord = () => {
   useEffect(() => {
     const fetchFinancialData = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/financial-records");
+        const response = await axios.get("http://localhost:8080/admin/residents-list");
         setFinancialData(response.data);
         setLoading(false);
       } catch (error) {
@@ -21,23 +21,23 @@ const FinancialRecord = () => {
     fetchFinancialData();
   }, []);
 
-//   // Update payment status in backend using Axios
-//   const handlePaymentUpdate = async (id) => {
-//     // try {
-//     // //   await axios.put(`http://localhost:8080/api/update-payment/${id}`, {
-//     //     status: "Paid",
-//     //   });
+  // Update payment status in backend using Axios
+  // const handlePaymentUpdate = async (id) => {
+  //   try {
+  //     await axios.get(`http://localhost:8080/api/update-payment/${id}`, {
+  //       status: "Paid",
+  //     });
 
-//       // Update UI after successful backend update
-//       setFinancialData((prevData) =>
-//         prevData.map((record) =>
-//           record.id === id ? { ...record, status: "Paid" } : record
-//         )
-//       );
-//     } catch (error) {
-//       console.error("Error updating payment status:", error);
-//     }
-//   };
+  //     // Update UI after successful backend update
+  //     setFinancialData((prevData) =>
+  //       prevData.map((record) =>
+  //         record.id === id ? { ...record, status: "Paid" } : record
+  //       )
+  //     );
+  //   } catch (error) {
+  //     console.error("Error updating payment status:", error);
+  //   }
+  // };
 
   return (
     <Container className="mt-4">
@@ -54,8 +54,10 @@ const FinancialRecord = () => {
                 <th>S.No</th>
                 <th>Full Name</th>
                 <th>Email</th>
-                <th>Amount (₹)</th>
+                <th>Mobile Number</th>
                 <th>Payment Status</th>
+                <th>Amount (₹)</th>
+                
               </tr>
             </thead>
             <tbody>
@@ -64,7 +66,9 @@ const FinancialRecord = () => {
                   <td>{index + 1}</td>
                   <td>{record.fullName}</td>
                   <td>{record.email}</td>
-                  <td>₹{record.amount}</td>
+                  <td>{record.mobileNo}</td>
+                  <td>{record.paymentStatus}</td>
+                  <td>₹{record.totalAmount}</td>
                   <td>
                     {record.status === "Paid" ? (
                       <Button variant="success" size="sm" disabled>

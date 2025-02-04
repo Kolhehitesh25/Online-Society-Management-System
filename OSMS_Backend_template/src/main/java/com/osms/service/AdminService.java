@@ -2,6 +2,8 @@ package com.osms.service;
 
 import java.util.List;
 
+import com.osms.dtos.AdminLoginRequestDto;
+import com.osms.dtos.AdminLoginResponseDto;
 import com.osms.dtos.ApiResponse;
 import com.osms.dtos.AssignTaskDto;
 import com.osms.dtos.FacilityBookingRespDto;
@@ -25,6 +27,8 @@ public interface AdminService {
 	ApiResponse deactivateResident(Long residentId);
 
 	ApiResponse deactivateStaff(Long staffId);
+
+	AdminLoginResponseDto loginAdmin(AdminLoginRequestDto loginDto);
 
 	
 	

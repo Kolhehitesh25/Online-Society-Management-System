@@ -1,6 +1,7 @@
 package com.osms.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,6 +22,8 @@ public interface UserDao extends JpaRepository<User,Long> {
 		ResidentPaymentDto getResidentPaymentDetails(@Param("residentId") Long residentId);
 
 	User findByIdAndRole(Long id, String role);
+
+	Optional<User> findByEmailAndPasswordAndRole(String email, String password, String string);
 
 
 }

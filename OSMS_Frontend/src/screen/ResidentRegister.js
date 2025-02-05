@@ -1,24 +1,50 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import registerbg from "../images/loginback.avif";
+import RegisterService from "../services/ResidentRegisterService"; 
+import { toast } from "react-toastify"; 
+import { useNavigate } from "react-router-dom";
 
 const ResidentRegister = () => {
-  const [role, setRole] = useState("resident");
+  const [role,setRole] = useState("RESIDENT");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [flatno, setFlatno] = useState("");
   const [mobile, setMobileno] = useState("");
+  const navigate= useNavigate();
 
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Registration successful for ${role}`);
+
+    const residentData = {
+      fullName: name,
+      email: email,
+      mobileNo: mobile,
+      password: password,
+      flatNumber: flatno,
+      role: role,
+    };
+    console.log("Resident Data being sent:", residentData);
+
+    try {
+       await RegisterService.registerResident(residentData);
+      toast.success("Registered Successfully as Resident");
+      setTimeout(() => {
+        
+        navigate('/login');
+      }, 1500);
+      
+    } catch (error) {
+      toast.error( "Registration failed. Please try again.");
+    }
   };
 
   return (
-    <div 
+    <div
       className="d-flex justify-content-center align-items-center vh-100 "
-      style={{ 
+      style={{
         background: `url(${registerbg}) no-repeat center center/cover`,
         backdropFilter: "blur(8px)",
       }}
@@ -35,12 +61,14 @@ const ResidentRegister = () => {
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
         }}
       >
-        <h2 className="text-center mb-0"><em>Resident</em> Registration</h2>
+        <h2 className="text-center mb-0">
+          <em>Resident</em> Registration
+        </h2>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-3 pt-2">
             <label htmlFor="name" className="form-label">
-             Full Name:
+              Full Name:
             </label>
             <input
               type="text"
@@ -116,21 +144,17 @@ const ResidentRegister = () => {
 
           <div className="mb-3">
             <label htmlFor="role" className="form-label">
-               Role:
+              Role:
             </label>
-            <select
-              className="form-select"
+            <input
+              type="text"
+              className="form-control"
               id="role"
               value={role}
-              onChange={(e) => setRole(e.target.value)}
-            >
-                 <option value="resident">Resident</option>
-          
-             
-            </select>
+              disabled
+            />
           </div>
 
-          
 
           <div className="text-center mt-3">
             <button

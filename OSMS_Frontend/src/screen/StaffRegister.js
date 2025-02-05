@@ -1,17 +1,50 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import registerbg from "../images/loginback.avif";
+import { toast } from 'react-toastify';
+import staffService from "../services/StaffRegisterService"; 
+import { useNavigate } from "react-router-dom";
 
 const StaffRegister = () => {
-  const [role, setRole] = useState("security");
+  const [role, setRole] = useState("SECURITY");  //yha default role hai
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mobile, setMobileno] = useState("");
+  const [Loading, setLoading]=useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Registration successful for ${role}`);
+
+    // this is my staff data 
+    const staffData = {
+      fullName: name,
+      email: email,
+      mobileNo: mobile,
+      password: password,
+      role: role,  
+    };
+    
+    setLoading(true);
+
+   
+    const result = await staffService.registerStaff(staffData);
+
+    setLoading(false);
+    
+    if (result.error) {
+      
+      toast.error("Registration failed. Please try again.");
+    } else {
+      
+      toast.success("registered Successfully as staff");
+      setTimeout(() => {
+        navigate('/login');
+      }, 1500);
+      
+
+    }
   };
 
   return (
@@ -108,8 +141,8 @@ const StaffRegister = () => {
               value={role}
               onChange={(e) => setRole(e.target.value)}
             >
-              <option value="cleaner">Cleaner</option>
-              <option value="security">Security</option>
+              <option value="SECURITY">Security</option>
+              <option value="CLEANER">Cleaner</option>
             </select>
           </div>
 

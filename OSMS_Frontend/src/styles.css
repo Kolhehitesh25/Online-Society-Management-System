@@ -46,3 +46,22 @@ color: aqua;
   padding-top: 4px;
 
 }
+
+/* dropdown in register here link */
+
+.custom-dropdown {
+  background-color: #f8f9fa; 
+  border-radius: 5px;
+}
+
+.custom-dropdown-item {
+  color: #007bff !important; 
+  font-weight: bold;
+}
+
+
+.custom-dropdown-item:hover {
+  background-color: grey !important;
+  color: white !important; 
+}
+

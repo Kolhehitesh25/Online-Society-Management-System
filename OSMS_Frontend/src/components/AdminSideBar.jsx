@@ -5,9 +5,9 @@ import {
   FaHome,
   FaBellSlash,
   FaUser,
-  FaMoneyBill,
+
   FaCommentDots,
-  FaCalendarCheck,
+  
   FaTasks,
 } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";

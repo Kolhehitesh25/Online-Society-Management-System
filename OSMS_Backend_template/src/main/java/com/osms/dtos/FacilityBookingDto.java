@@ -24,5 +24,6 @@ public class FacilityBookingDto {
 	 
 	    private LocalDate toDateTime;
 
-	    private Long residentId;
+//	    private Long residentId;
+	    
 }

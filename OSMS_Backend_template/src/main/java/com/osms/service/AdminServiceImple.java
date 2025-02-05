@@ -28,6 +28,7 @@ import com.osms.pojos.Notification;
 import com.osms.pojos.Payment;
 import com.osms.pojos.Tasks;
 import com.osms.pojos.User;
+import com.osms.pojos.UserRole;
 
 @Service
 @Transactional
@@ -62,30 +63,30 @@ public class AdminServiceImple implements AdminService {
 
 	@Override
 	public ApiResponse assignTask(AssignTaskDto assignTaskDTO, Long staffId) {
-		
-        Optional<User> staffOpt=userDao.findById(staffId);; 
-        
-        if (staffOpt.isEmpty()) {
-            return new ApiResponse("Staff member not found!");
-        }
+	    Optional<User> staffOpt = userDao.findById(staffId);
+	    
+	    if (staffOpt.isEmpty()) {
+	        return new ApiResponse("Staff member not found!");
+	    }
 
-        User staff = staffOpt.get();
+	    User staff = staffOpt.get();
 
-        if (!staff.getRole().equalsIgnoreCase("cleaner") && !staff.getRole().equalsIgnoreCase("security")) {
-            return new ApiResponse("Invalid staff role! Only Cleaner or Security can be assigned tasks.");
-        }
-        Tasks task = new Tasks();
-        task.setDescription(assignTaskDTO.getDescription());
-        task.setStaff(staff);
-        taskDao.save(task);
-        return new ApiResponse("Task successfully assigned to staff.");
+	    if (staff.getRole() != UserRole.CLEANER && staff.getRole() != UserRole.SECURITY) {
+	        return new ApiResponse("Invalid staff role! Only Cleaner or Security can be assigned tasks.");
+	    }
 
-       
+	    Tasks task = new Tasks();
+	    task.setDescription(assignTaskDTO.getDescription());
+	    task.setStaff(staff);
+	    taskDao.save(task);
+	    
+	    return new ApiResponse("Task successfully assigned to staff.");
 	}
+	
 
 	@Override
 	public List<ResidentPaymentResponseDto> getAllResidentsWithPayments() {
-		List<User> residents = userDao.findByRole("resident"); // Fetch all residents
+		List<User> residents = userDao.findByRole(UserRole.RESIDENT); // Fetch all residents
 
         return residents.stream().map(resident -> {
             Optional<Payment> paymentOpt = paymentDao.findByResident(resident);
@@ -148,54 +149,57 @@ public class AdminServiceImple implements AdminService {
 
 	@Override
 	public ApiResponse deactivateResident(Long residentId) {
-     Optional<User> residentOpt = userDao.findById(residentId);
-        
-        if (residentOpt.isPresent()) {
-            User resident = residentOpt.get();
-            
-            if ("Resident".equalsIgnoreCase(resident.getRole())) {
-                resident.setStatus(false);
-                userDao.save(resident);
-                return new ApiResponse("Resident with ID " + residentId + " has been deactivated successfully.");
-            } else {
-                return new ApiResponse("User is not a resident.");
-            }
-        } else {
-            return new ApiResponse("Resident not found.");
-        }
+	    Optional<User> residentOpt = userDao.findById(residentId);
+
+	    if (residentOpt.isPresent()) {
+	        User resident = residentOpt.get();
+
+	        // Fix: Remove null parameter from getRole()
+	        if (resident.getRole() == UserRole.RESIDENT) {
+	            resident.setStatus(false);
+	            userDao.save(resident);
+	            return new ApiResponse("Resident with ID " + residentId + " has been deactivated successfully.");
+	        } else {
+	            return new ApiResponse("User is not a resident.");
+	        }
+	    } else {
+	        return new ApiResponse("Resident not found.");
+	    }
 	}
 
 	@Override
 	public ApiResponse deactivateStaff(Long staffId) {
-Optional<User> staffOpt = userDao.findById(staffId);
-        
-        if (staffOpt.isPresent()) {
-            User staff = staffOpt.get();
-            
-            if ("Cleaner".equalsIgnoreCase(staff.getRole()) || "Security".equalsIgnoreCase(staff.getRole())) {
-                staff.setStatus(false);
-                userDao.save(staff);
-                return new ApiResponse("Staff with ID " + staffId + " has been deactivated successfully.");
-            } else {
-                return new ApiResponse("User is not a Staff.");
-            }
-        } else {
-            return new ApiResponse("Staff not found.");
-        }
+	    Optional<User> staffOpt = userDao.findById(staffId);
+	    
+	    if (staffOpt.isPresent()) {
+	        User staff = staffOpt.get();
+	        
+	        // Fix: Compare with Enum values instead of using equalsIgnoreCase()
+	        if (staff.getRole() == UserRole.CLEANER|| staff.getRole() == UserRole.SECURITY) {
+	            staff.setStatus(false);
+	            userDao.save(staff);
+	            return new ApiResponse("Staff with ID " + staffId + " has been deactivated successfully.");
+	        } else {
+	            return new ApiResponse("User is not a staff.");
+	        }
+	    } else {
+	        return new ApiResponse("Staff not found.");
+	    }
 	}
+
 
 	@Override
 	public AdminLoginResponseDto loginAdmin(AdminLoginRequestDto loginDto) {
-		
-		 Optional<User> admin = userDao.findByEmailAndPasswordAndRole(
-	                loginDto.getEmail(), loginDto.getPassword(), "Admin");
+	    Optional<User> admin = userDao.findByEmailAndPasswordAndRole(
+	        loginDto.getEmail(), loginDto.getPassword(), UserRole.ADMIN); // Fix here
 
-	        if (admin.isPresent()) {
-	            return new AdminLoginResponseDto("Login Successful!", "dummy-token-123");  // JWT can be added later
-	        } else {
-	            throw new RuntimeException("Invalid credentials or not an admin!");
-	        }
+	    if (admin.isPresent()) {
+	        return new AdminLoginResponseDto("Login Successful!", "token-123"); // JWT can be added later
+	    } else {
+	        throw new RuntimeException("Invalid credentials or not an admin!");
+	    }
 	}
+
 
 	
 		

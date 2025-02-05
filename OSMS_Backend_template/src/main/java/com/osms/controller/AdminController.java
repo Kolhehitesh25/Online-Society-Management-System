@@ -1,5 +1,5 @@
 package com.osms.controller;
-
+import com.osms.service.AdminService;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import com.osms.dtos.FacilityBookingRespDto;
 import com.osms.dtos.ResidentPaymentResponseDto;
 import com.osms.dtos.ResidentRegistrationReqDto;
 import com.osms.dtos.SendNotificationDto;
-import com.osms.service.AdminService;
+
 
 @RestController
 @RequestMapping("/admin")

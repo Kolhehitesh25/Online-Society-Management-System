@@ -23,7 +23,7 @@ public interface ResidentService {
     
     ApiResponse updatePaymentStatus(PaymentUpdateRequestDto requestDto);
 
-	ApiResponse bookFacility(FacilityBookingDto bookingDto);
+	ApiResponse bookFacility(FacilityBookingDto bookingDto,Long residentId );
 
 	
 }

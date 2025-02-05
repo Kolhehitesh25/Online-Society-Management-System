@@ -24,6 +24,7 @@ import com.osms.dtos.ResidentPaymentResponseDto;
 import com.osms.dtos.ResidentRegistrationReqDto;
 import com.osms.service.ResidentService;
 
+
 @RestController
 @RequestMapping("/resident")
 public class ResidentController {
@@ -79,9 +80,17 @@ public class ResidentController {
     }
 	
 	@PostMapping("/facility-book")
-    public ResponseEntity<ApiResponse> bookFacility(@RequestBody FacilityBookingDto bookingDto) {
-        return ResponseEntity.ok(residentService.bookFacility(bookingDto));
-    }
+	public ResponseEntity<ApiResponse> bookFacility(
+	    @RequestParam Long residentId,  // Get residentId from the request parameter
+	    @RequestBody FacilityBookingDto bookingDto) { 
+
+	    // Instead of setting residentId into DTO, we pass it directly to the service
+	    return ResponseEntity.ok(residentService.bookFacility(bookingDto, residentId));
+	}
+
+
+
+
 
 	
 	

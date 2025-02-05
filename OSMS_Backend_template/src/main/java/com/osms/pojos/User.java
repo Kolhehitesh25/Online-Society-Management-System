@@ -1,7 +1,11 @@
 package com.osms.pojos;
 
+
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -26,10 +30,13 @@ public class User extends BaseEntity {
     private String mobileNo;
 	@Column(name="password",nullable=false,length=40)
     private String password;
-	@Column(name="role",nullable=false,length=40)
-    private String role; 
-	
+	@Enumerated(EnumType.STRING)
+	@Column(length = 30) 
+
+	private UserRole role;
 	@OneToOne(mappedBy = "resident")
+	
 	private Flat flat;  
-    private boolean status = true; 
+    private boolean status = true;
+	
 }

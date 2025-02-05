@@ -9,21 +9,22 @@ import org.springframework.data.repository.query.Param;
 
 import com.osms.dtos.ResidentPaymentDto;
 import com.osms.pojos.User;
+import com.osms.pojos.UserRole;
 
-public interface UserDao extends JpaRepository<User,Long> {
+public interface UserDao extends JpaRepository<User, Long> {
 
-	List<User> findByRole(String string);
+	List<User> findByRole(UserRole role);
 
-	//ResidentPaymentDto getResidentPaymentDetails(Long residentId);
-	
-	@Query("SELECT new com.osms.dtos.ResidentPaymentDto(r.fullName, r.email, p.status, p.totalAmount) " +
-		       "FROM Payment p JOIN p.resident r " +
-		       "WHERE r.id = :residentId")
-		ResidentPaymentDto getResidentPaymentDetails(@Param("residentId") Long residentId);
+	// ResidentPaymentDto getResidentPaymentDetails(Long residentId);
 
-	User findByIdAndRole(Long id, String role);
+	@Query("SELECT new com.osms.dtos.ResidentPaymentDto(r.fullName, r.email, p.status, p.totalAmount) "
+			+ "FROM Payment p JOIN p.resident r " + "WHERE r.id = :residentId")
+	ResidentPaymentDto getResidentPaymentDetails(@Param("residentId") Long residentId);
 
-	Optional<User> findByEmailAndPasswordAndRole(String email, String password, String string);
+	User findByIdAndRole(Long id, UserRole role);
 
+	Optional<User> findByEmail(String email);
+
+	Optional<User> findByEmailAndPasswordAndRole(String email, String password, UserRole role);
 
 }

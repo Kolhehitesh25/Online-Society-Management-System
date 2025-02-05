@@ -129,20 +129,29 @@ public class ResidentServiceImple implements ResidentService {
 
 
 	@Override
-	public ApiResponse bookFacility(FacilityBookingDto bookingDto) {
-		User resident = userDao.findById(bookingDto.getResidentId())
-                .orElseThrow(() -> new RuntimeException("Resident not found"));
+	public ApiResponse bookFacility(FacilityBookingDto bookingDto, Long residentId) {
+		 User resident = userDao.findById(residentId)
+		            .orElseThrow(() -> new RuntimeException("Resident not found"));
 
-		 FacilityBooking facility = new FacilityBooking();
+		    // Create a new facility booking
+		    FacilityBooking facility = new FacilityBooking();
 		    facility.setFacilityName(bookingDto.getFacilityName());
 		    facility.setFromDateTime(bookingDto.getFromDateTime());
 		    facility.setToDateTime(bookingDto.getToDateTime());
 		    facility.setStatus("Requested");
-		    facility.setResident(resident); 
+		    facility.setResident(resident); // Associate the facility with the resident
 
-        facilityBookingDao.save(facility);
-        return new ApiResponse("Facility booked successfully!");
+		    // Save the facility booking
+		    facilityBookingDao.save(facility);
+
+		    return new ApiResponse("Facility booked successfully!");
+	
 	}
+
+
+
+	
+
 	}
 
 

@@ -2,6 +2,7 @@
 <section name="Workbench">
 	<section name="MavenProjectImportWizardPage">
 		<list key="rootDirectory">
+			<item value="D:\CDAC_ Project_ OSMS\Online-Society-Management-System\OSMS_Backend_template"/>
 			<item value="F:\Online-Society-Management-System\OSMS_Backend_template"/>
 		</list>
 		<list key="projectNameTemplate">

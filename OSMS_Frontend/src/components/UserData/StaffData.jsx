@@ -1,51 +1,79 @@
-import React, { useState } from "react";
-import { Table, Form, InputGroup, Container, Button, Modal } from "react-bootstrap";
+import axios from "axios";
+import React, { useState, useEffect } from "react";
+import { Table, Form, InputGroup, Container, Button } from "react-bootstrap";
 
 const StaffData = () => {
   const [search, setSearch] = useState("");
-  const [staffs, setstaffs] = useState([
-    { id: 1, name: "John Doe", phone: "9876543210", email: "john@example.com" },
-    { id: 2, name: "Jane Smith", phone: "8765432109", email: "jane@example.com" },
-    { id: 3, name: "Mark Taylor", phone: "7654321098", email: "mark@example.com" },
-    { id: 4, name: "Lisa Brown", phone: "6543210987", email: "lisa@example.com" },
-    { id: 3, name: "Mark Taylor", phone: "7654321098", email: "mark@example.com" },
-    { id: 4, name: "Lisa Brown", phone: "6543210987", email: "lisa@example.com" },
-  
-  ]);
+  const [staffs, setStaffs] = useState([]); // State to store the staff data
 
-  const [showModal, setShowModal] = useState(false);
-  const [currentstaff, setCurrentstaff] = useState(null);
+  // Fetch staff data from backend
+  useEffect(() => {
+    const fetchStaffs = async () => {
+      const token = localStorage.getItem("token");
 
-  // Function to handle delete action
-  const handleDelete = (id) => {
-    const updatedstaffs = staffs.filter((staff) => staff.id !== id);
-    setstaffs(updatedstaffs);
+      if (!token) {
+        console.error("No authentication token found");
+        return;
+      }
+
+      try {
+        const response = await axios.get("http://localhost:8080/admin/all-staffs", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        // Ensure staff status is correctly mapped
+        const updatedStaffs = response.data.map((staff) => ({
+          ...staff,
+          status: staff.status === true, // Ensure status is always a boolean
+        }));
+
+        setStaffs(updatedStaffs);
+      } catch (error) {
+        console.error("Error fetching staff data:", error);
+      }
+    };
+
+    fetchStaffs();
+  }, []); // Runs on initial render and refresh
+
+  // Toggle staff status (Deactivate or Activate)
+  const handleToggleStatus = async (staffId, currentStatus) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No authentication token found");
+      return;
+    }
+
+    try {
+      const endpoint = currentStatus
+        ? `http://localhost:8080/admin/deactivate/staff/${staffId}`
+        : `http://localhost:8080/admin/activate/staff/${staffId}`;
+
+      // Optimistically update the UI
+      setStaffs((prevStaffs) =>
+        prevStaffs.map((staff) =>
+          staff.id === staffId ? { ...staff, status: !currentStatus } : staff
+        )
+      );
+
+      // Send request to the backend
+      await axios.put(endpoint, {}, { headers: { Authorization: `Bearer ${token}` } });
+
+    } catch (error) {
+      console.error("Error toggling staff status:", error);
+    }
   };
 
-  // Function to open the update modal and set the current staff's data
-  const handleUpdate = (staff) => {
-    setCurrentstaff(staff);
-    setShowModal(true);
-  };
-
-  // Function to handle update form submission
-  const handleSaveUpdate = () => {
-    setstaffs((prevstaffs) =>
-      prevstaffs.map((staff) =>   
-        staff.id === currentstaff.id ? currentstaff : staff
-      )
-    );
-    setShowModal(false);
-  };
-
-  // Filter staffs based on search input
-  const filteredstaffs = staffs.filter((staff) =>
-    staff.name.toLowerCase().includes(search.toLowerCase())
+  // Filter staff based on search input
+  const filteredStaffs = staffs.filter((staff) =>
+    staff.fullName.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <Container className="mt-4 " style={{ maxWidth: "2000px", padding: "0",marginLeft:'10px'}}>
-      <h3 className="text-center mb-4 " style={{ color: 'teal' }}>Staff Information</h3>
+    <Container className="mt-4" style={{ maxWidth: "2000px", padding: "0", marginLeft: "10px" }}>
+      <h3 className="text-center mb-4" style={{ color: "teal" }}>
+        Staff Information
+      </h3>
 
       {/* Search Bar */}
       <InputGroup className="mb-3">
@@ -66,32 +94,26 @@ const StaffData = () => {
             <th>Name</th>
             <th>Phone</th>
             <th>Email</th>
+            <th>Role</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          {filteredstaffs.length > 0 ? (
-            filteredstaffs.map((staff, index) => (
+          {filteredStaffs.length > 0 ? (
+            filteredStaffs.map((staff, index) => (
               <tr key={staff.id}>
                 <td>{index + 1}</td>
-                <td>{staff.name}</td>
-                <td>{staff.phone}</td>
+                <td>{staff.fullName}</td>
+                <td>{staff.mobileNo}</td>
                 <td>{staff.email}</td>
+                <td>{staff.role}</td>
                 <td>
                   <Button
-                    
+                    variant={staff.status ? "danger" : "success"} // Red for Deactivate, Green for Activate
                     size="md"
-                    onClick={() => handleUpdate(staff)}
-                    style={{ marginRight: "10px" }}
+                    onClick={() => handleToggleStatus(staff.id, staff.status)}
                   >
-                    Update
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="md"
-                    onClick={() => handleDelete(staff.id)}
-                  >
-                    Delete
+                    {staff.status ? "Delete" : "Restore"}
                   </Button>
                 </td>
               </tr>
@@ -99,63 +121,12 @@ const StaffData = () => {
           ) : (
             <tr>
               <td colSpan="6" className="text-center text-danger">
-                No staffs Found
+                No Staff Found
               </td>
             </tr>
           )}
         </tbody>
       </Table>
-
-      {/* Update Modal */}
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Update staff</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="name">
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                type="text"
-                value={currentstaff?.name || ""}
-                onChange={(e) => setCurrentstaff({ ...currentstaff, name: e.target.value })}
-              />
-            </Form.Group>
-            <Form.Group controlId="flat">
-              <Form.Label>Flat No.</Form.Label>
-              <Form.Control
-                type="text"
-                value={currentstaff?.flat || ""}
-                onChange={(e) => setCurrentstaff({ ...currentstaff, flat: e.target.value })}
-              />
-            </Form.Group>
-            <Form.Group controlId="phone">
-              <Form.Label>Phone</Form.Label>
-              <Form.Control
-                type="text"
-                value={currentstaff?.phone || ""}
-                onChange={(e) => setCurrentstaff({ ...currentstaff, phone: e.target.value })}
-              />
-            </Form.Group>
-            <Form.Group controlId="email">
-              <Form.Label>Email</Form.Label>
-              <Form.Control
-                type="email"
-                value={currentstaff?.email || ""}
-                onChange={(e) => setCurrentstaff({ ...currentstaff, email: e.target.value })}
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleSaveUpdate}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </Container>
   );
 };

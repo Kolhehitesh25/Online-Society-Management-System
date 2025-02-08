@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,33 +52,37 @@ public class ResidentServiceImple implements ResidentService {
     @Autowired
 	private ModelMapper modelMapper;
 	
-    
+    @Autowired 
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public ApiResponse registerResident(ResidentRegistrationReqDto registrationDTO) {
        
-    	User transientResident = modelMapper.map(registrationDTO, User.class);
+        User transientResident = modelMapper.map(registrationDTO, User.class);
 
-        
+        // Encode the password before saving it
+        String encodedPassword = passwordEncoder.encode(registrationDTO.getPassword());
+        transientResident.setPassword(encodedPassword);  // Set the encoded password
+
+        // Create and persist flat
         Flat flat = new Flat();
-        flat.setFlatNumber(registrationDTO.getFlatNumber());  
+        flat.setFlatNumber(registrationDTO.getFlatNumber());
         flat.setResident(transientResident);
         Flat persistedFlat = flatDao.save(flat);  // Save Flat first
 
-        
+        // Set the flat in the resident entity
         transientResident.setFlat(persistedFlat);
 
-       
+        // Create and save payment record
         Payment newPayment = new Payment();
-        newPayment.setResident(transientResident);  
-        newPayment.setStatus("PENDING");  
-        newPayment.setTotalAmount(1500.0);  
+        newPayment.setResident(transientResident);
+        newPayment.setStatus("PENDING");
+        newPayment.setTotalAmount(1500.0);
         newPayment.setPaymentDate(LocalDate.now());
 
-        
-        paymentDao.save(newPayment);  
+        paymentDao.save(newPayment);
 
-        
+       
         User persistedResident = userDao.save(transientResident);
 
         return new ApiResponse("Registered new resident with ID: " + persistedResident.getId());

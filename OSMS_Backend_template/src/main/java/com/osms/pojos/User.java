@@ -31,5 +31,6 @@ public class User extends BaseEntity {
 	
 	@OneToOne(mappedBy = "resident")
 	private Flat flat;  
-    private boolean status = true; 
+    private boolean status = true;
+	
 }

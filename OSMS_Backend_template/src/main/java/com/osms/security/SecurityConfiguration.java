@@ -1,4 +1,5 @@
 package com.osms.security;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,44 +18,45 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-    private final CustomJWTAuthenticationFilter customJWTAuthenticationFilter;
+	private final CustomJWTAuthenticationFilter customJWTAuthenticationFilter;
 
-    public SecurityConfiguration(CustomJWTAuthenticationFilter customJWTAuthenticationFilter) {
-        this.customJWTAuthenticationFilter = customJWTAuthenticationFilter;
-    }
+	public SecurityConfiguration(CustomJWTAuthenticationFilter customJWTAuthenticationFilter) {
+		this.customJWTAuthenticationFilter = customJWTAuthenticationFilter;
+	}
 
-    @Bean
-    public SecurityFilterChain authorizeRequests(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(requests -> requests
-            		 .requestMatchers("/auth/login","/resident/register","/staff/register","/v*/api-doc*/**", "/swagger-ui/**").permitAll()
-                     .requestMatchers(HttpMethod.OPTIONS).permitAll() // CORS support
-                     
-                     // Admin Endpoints (Accessible only to Admins)
-                     .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+	@Bean
+	public SecurityFilterChain authorizeRequests(HttpSecurity http) throws Exception {
+		http.csrf(csrf -> csrf.disable())
 
-                     // Resident Endpoints (Accessible only to Residents)
-                     .requestMatchers("/resident/**").hasAuthority("ROLE_RESIDENT")
+				.authorizeHttpRequests(requests -> requests
+						.requestMatchers("/auth/login", "/auth/forgot-password", "/auth/reset-password/{token}",
+								"/resident/register", "/staff/register", "/v*/api-doc*/**", "/swagger-ui/**")
+						.permitAll().requestMatchers(HttpMethod.OPTIONS).permitAll() // CORS support
 
-                     // Staff Endpoints (Accessible only to Staff)
-                     .requestMatchers("/staff/**").hasAuthority("ROLE_CLEANER") 
-                     
-                     .requestMatchers("/staff/**").hasAuthority("ROLE_SECURITY") 
+						// Admin Endpoints (Accessible only to Admins)
+						.requestMatchers("/admin/**", "/auth/get/{id}", "/auth/update").hasAuthority("ROLE_ADMIN")
 
-                .anyRequest().authenticated())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-           http.addFilterBefore(customJWTAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
+						// Resident Endpoints (Accessible only to Residents)
+						.requestMatchers("/resident/**").hasAuthority("ROLE_RESIDENT")
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
+						// Staff Endpoints (Accessible only to Staff)
+						.requestMatchers("/staff/**").hasAnyAuthority("ROLE_CLEANER", "ROLE_SECURITY")
 
+						.requestMatchers("/auth/getall/{id}", "/auth/updateone/{id}").hasAnyAuthority("ROLE_RESIDENT","ROLE_ADMIN","ROLE_CLEANER", "ROLE_SECURITY")
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();  // No password encoding (not secure for production)
-    }
+						.anyRequest().authenticated())
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+		http.addFilterBefore(customJWTAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+		return http.build();
+	}
+
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+		return config.getAuthenticationManager();
+	}
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder(); // securing the password
+	}
 }

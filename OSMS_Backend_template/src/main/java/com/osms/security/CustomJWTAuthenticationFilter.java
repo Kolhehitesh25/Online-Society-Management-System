@@ -22,6 +22,13 @@ public class CustomJWTAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+    	
+    	String uri = request.getRequestURI();
+        if (uri.contains("/auth/reset-password/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer")) {
@@ -30,6 +37,8 @@ public class CustomJWTAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             System.out.println("Saved auth details under Spring Security context!");
         }
+        
+        
 
         filterChain.doFilter(request, response);
     }

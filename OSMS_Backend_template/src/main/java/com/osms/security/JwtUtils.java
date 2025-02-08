@@ -31,6 +31,9 @@ public class JwtUtils {
     private int jwtExpirationMs;
 
     private Key key;
+    
+   
+    
 
     @PostConstruct
     public void init() {
@@ -53,8 +56,6 @@ public class JwtUtils {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
-
-
 
     public String getUserNameFromJwtToken(Claims claims) {
         return claims.getSubject();
@@ -91,4 +92,5 @@ public class JwtUtils {
 
         return new UsernamePasswordAuthenticationToken(email, userId, authorities);
     }
+    
 }

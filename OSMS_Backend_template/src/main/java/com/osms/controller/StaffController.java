@@ -36,7 +36,7 @@ public class StaffController {
                      .body(staffService.registerStaff(staffRegistrationDTO));
         }
         catch(RuntimeException e) {
-        	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        	return ResponseEntity.status(HttpStatus.CONFLICT)
         			.body(new ApiResponse(e.getMessage()));
         }
     }

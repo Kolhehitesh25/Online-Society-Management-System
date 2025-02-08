@@ -39,8 +39,8 @@ public class ResidentController {
                      .body(residentService.registerResident(registrationDTO));
         }
         catch(RuntimeException e) {
-        	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        			.body(new ApiResponse(e.getMessage()));
+        	return ResponseEntity.status(HttpStatus.CONFLICT)
+        			.body(new ApiResponse("email already exists"));
         }
     }
 	
@@ -68,6 +68,7 @@ public class ResidentController {
 			 return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage()));
 		 }
 	 }
+	
 	@PutMapping("/update-status")
     public ResponseEntity<?> updatePaymentStatus(@RequestBody PaymentUpdateRequestDto requestDto) {
         try {

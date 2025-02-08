@@ -20,8 +20,8 @@ const ResetPassword = () => {
 
     try {
       const response = await axios.post(`http://localhost:8080/auth/reset-password/${token}`, {
-        token,
-        password,
+      
+        newPassword:password
       });
       toast.success("Password updated successfully!");
       navigate("/login");

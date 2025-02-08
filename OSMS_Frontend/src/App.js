@@ -10,7 +10,7 @@ import AdminDashboard from "./components/AdminDashboard";
 import StaffDashboard from "./components/StaffDashboard";
 import ResidentDashboard from "./components/ResidentDashboard";
 
-import ManagerDashboard from "./components/AdminDashboard";
+
 import HomePage from "./screen/HomePage";
 import StaffRegister from "./screen/StaffRegister";
 import ResidentRegister from "./screen/ResidentRegister";
@@ -24,11 +24,13 @@ import UpdateProfile from "./components/UpdateProfiles/UpdateProfile";
 import FinancialRecord from "./components/FinancialRecord";
 import FacilityBooking from "./components/FacilityBooking";
 import PrivateRoute from "./components/PrivateRoute";
+import ForgotPassword from "./components/ForgotPassword";
+import ResetPassword from "./components/ResetPassword";
 
 function App() {
   return (
     <div className="App">
-      <ToastContainer position="top-center" autoClose={3000} />
+      <ToastContainer position="top-center" autoClose={1500} />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/home" element={<HomePage />} />
@@ -63,6 +65,8 @@ function App() {
         </Route>
 
         <Route path="/logout" element={<Logout />} />
+        <Route path="/forgot-password" element={<ForgotPassword/>}/>
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>
     </div>
   );

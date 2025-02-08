@@ -2,7 +2,9 @@ import React from "react";
 import { TypeAnimation } from "react-type-animation";
 import StatisticBar from "../StatisticBar"
 import Taskpiechart from "../Taskpiechart"
+import { useNavigate } from "react-router-dom";
 const AdminDashboardData = () => {
+  const navigate=useNavigate();
   return (
     <>
     
@@ -47,7 +49,10 @@ const AdminDashboardData = () => {
               backgroundColor: "#C0C0C0",
               width: "180px",
               marginRight: "20px",
+              
+              
             }}
+            onClick={()=>navigate("/admin/residents")}
             onMouseEnter={(e) => (e.target.style.backgroundColor = "	#808080")}
             onMouseLeave={(e) => (e.target.style.backgroundColor = "#C0C0C0")}
           >
@@ -58,6 +63,7 @@ const AdminDashboardData = () => {
             style={{ backgroundColor: "#C0C0C0", width: "180px" }}
             onMouseEnter={(e) => (e.target.style.backgroundColor = "	#808080")}
             onMouseLeave={(e) => (e.target.style.backgroundColor = "#C0C0C0")}
+            onClick={()=>navigate("/admin/staffs")}
           >
             Manage Staff
           </button>

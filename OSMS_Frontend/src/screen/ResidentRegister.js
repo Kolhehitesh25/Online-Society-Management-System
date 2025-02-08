@@ -2,21 +2,54 @@ import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import registerbg from "../images/loginback.avif";
 import RegisterService from "../services/ResidentRegisterService"; 
-import { toast } from "react-toastify"; 
+import { toast, ToastContainer } from "react-toastify"; 
 import { useNavigate } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
 
 const ResidentRegister = () => {
-  const [role,setRole] = useState("RESIDENT");
+  const [role] = useState("RESIDENT");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [flatno, setFlatno] = useState("");
   const [mobile, setMobileno] = useState("");
-  const navigate= useNavigate();
+  const navigate = useNavigate();
 
+  const validateFields = () => {
+    if (name.trim().length < 3) {
+      toast.error("Name must be at least 3 characters long.");
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Enter a valid email address.");
+      return false;
+    }
+
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters long.");
+      return false;
+    }
+
+    const mobileRegex = /^\d{10}$/;
+    if (!mobileRegex.test(mobile)) {
+      toast.error("Mobile number must be exactly 10 digits.");
+      return false;
+    }
+
+    if (!flatno || flatno <= 0) {
+      toast.error("Flat number must be a positive number.");
+      return false;
+    }
+
+    return true;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateFields()) return;
 
     const residentData = {
       fullName: name,
@@ -26,24 +59,27 @@ const ResidentRegister = () => {
       flatNumber: flatno,
       role: role,
     };
+
     console.log("Resident Data being sent:", residentData);
 
     try {
-       await RegisterService.registerResident(residentData);
+      await RegisterService.registerResident(residentData);
       toast.success("Registered Successfully as Resident");
       setTimeout(() => {
-        
-        navigate('/login');
+        navigate("/login");
       }, 1500);
-      
     } catch (error) {
-      toast.error( "Registration failed. Please try again.");
+      if (error.response && error.response.status === 409) {
+        toast.error("Email already exists. Please use a different email.");
+      } else {
+        toast.error("Registration failed. Please try again.");
+      }
     }
   };
 
   return (
     <div
-      className="d-flex justify-content-center align-items-center vh-100 "
+      className="d-flex justify-content-center align-items-center vh-100"
       style={{
         background: `url(${registerbg}) no-repeat center center/cover`,
         backdropFilter: "blur(8px)",
@@ -155,7 +191,6 @@ const ResidentRegister = () => {
             />
           </div>
 
-
           <div className="text-center mt-3">
             <button
               type="submit"
@@ -185,6 +220,7 @@ const ResidentRegister = () => {
           </div>
         </form>
       </div>
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };

@@ -12,18 +12,16 @@ import com.osms.dtos.ResidentRegistrationReqDto;
 
 public interface ResidentService {
 
-   ApiResponse registerResident(ResidentRegistrationReqDto registrationDTO);
+	ApiResponse registerResident(ResidentRegistrationReqDto registrationDTO);
 
-   List<DisplayNotificationDto> displayTop4Notifications();
+	List<DisplayNotificationDto> displayTop4Notifications();
 
-   List<ResidentPaymentResponseDto> getAllResidentsWithPayment();
+	List<ResidentPaymentResponseDto> getAllResidentsWithPayment();
 
-   ResidentPaymentDto getResidentPayment(Long residentId);
+	ResidentPaymentDto getResidentPayment(Long residentId);
 
-    
-    ApiResponse updatePaymentStatus(PaymentUpdateRequestDto requestDto);
+	ApiResponse updatePaymentStatus(PaymentUpdateRequestDto requestDto);
 
-	ApiResponse bookFacility(FacilityBookingDto bookingDto,Long residentId );
+	ApiResponse bookFacility(FacilityBookingDto bookingDto, Long residentId);
 
-	
 }

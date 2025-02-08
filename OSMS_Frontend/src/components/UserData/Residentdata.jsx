@@ -5,8 +5,9 @@ import { Table, Form, InputGroup, Container, Button } from "react-bootstrap";
 const Residentdata = () => {
   const [search, setSearch] = useState("");
   const [residents, setResidents] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1); // Track current page
+  const [itemsPerPage] = useState(7); // Set the number of items per page
 
-  // Fetch residents from backend
   useEffect(() => {
     const fetchResidents = async () => {
       const token = localStorage.getItem("token");
@@ -17,14 +18,16 @@ const Residentdata = () => {
       }
 
       try {
-        const response = await axios.get("http://localhost:8080/admin/all-residents", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(
+          "http://localhost:8080/admin/all-residents",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
-        // Ensure resident status is correctly mapped
         const updatedResidents = response.data.map((resident) => ({
           ...resident,
-          status: resident.status === true, // Ensure status is always a boolean
+          status: resident.status === true,
         }));
 
         setResidents(updatedResidents);
@@ -34,46 +37,65 @@ const Residentdata = () => {
     };
 
     fetchResidents();
-  }, []); // Runs on initial render and refresh
+  }, []);
 
-  // Toggle resident status (Deactivate or Activate)
   const handleToggleStatus = async (residentId, currentStatus) => {
     const token = localStorage.getItem("token");
     if (!token) {
       console.error("No authentication token found");
       return;
     }
-  
+
     try {
       const endpoint = currentStatus
         ? `http://localhost:8080/admin/deactivate/${residentId}`
         : `http://localhost:8080/admin/activate/${residentId}`;
-  
-      // Optimistically update the UI
+
       setResidents((prevResidents) =>
         prevResidents.map((resident) =>
-          resident.id === residentId ? { ...resident, status: !currentStatus } : resident
+          resident.id === residentId
+            ? { ...resident, status: !currentStatus }
+            : resident
         )
       );
-  
-      // Send request to the backend
-      await axios.put(endpoint, {}, { headers: { Authorization: `Bearer ${token}` } });
-  
-      // Optional: Re-fetch data from the backend to ensure accuracy
-      // fetchResidents(); 
+
+      await axios.put(
+        endpoint,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
     } catch (error) {
       console.error("Error toggling resident status:", error);
     }
   };
-  
 
-  // Filter residents based on search input
   const filteredResidents = residents.filter((resident) =>
     resident.fullName.toLowerCase().includes(search.toLowerCase())
   );
 
+  //pagination logic
+  const indexOfLastResident = currentPage * itemsPerPage;
+  const indexOfFirstResident = indexOfLastResident - itemsPerPage;
+  const currentResidents = filteredResidents.slice(
+    indexOfFirstResident,
+    indexOfLastResident
+  );
+
+  const totalPages = Math.ceil(filteredResidents.length / itemsPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
   return (
-    <Container className="mt-4" style={{ maxWidth: "2000px", padding: "0", marginLeft: "10px" }}>
+    <Container
+      className="mt-4"
+      style={{ maxWidth: "2000px", padding: "0", marginLeft: "10px" }}
+    >
       <h3 className="text-center mb-4" style={{ color: "teal" }}>
         Resident Information
       </h3>
@@ -90,7 +112,13 @@ const Residentdata = () => {
       </InputGroup>
 
       {/* Table */}
-      <Table striped bordered hover responsive className="text-center shadow-lg">
+      <Table
+        striped
+        bordered
+        hover
+        responsive
+        className="text-center shadow-lg"
+      >
         <thead className="bg-dark text-light">
           <tr>
             <th>S.No</th>
@@ -102,8 +130,8 @@ const Residentdata = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredResidents.length > 0 ? (
-            filteredResidents.map((resident, index) => (
+          {currentResidents.length > 0 ? (
+            currentResidents.map((resident, index) => (
               <tr key={resident.id}>
                 <td>{index + 1}</td>
                 <td>{resident.fullName}</td>
@@ -114,7 +142,9 @@ const Residentdata = () => {
                   <Button
                     variant={resident.status ? "danger" : "success"} // Red for Delete, Green for Restore
                     size="md"
-                    onClick={() => handleToggleStatus(resident.id, resident.status)}
+                    onClick={() =>
+                      handleToggleStatus(resident.id, resident.status)
+                    }
                   >
                     {resident.status ? "Delete" : "Restore"}
                   </Button>
@@ -130,6 +160,30 @@ const Residentdata = () => {
           )}
         </tbody>
       </Table>
+
+      {/* Pagination */}
+      <div className="d-flex justify-content-center align-items-center mx-auto">
+        <Button style={{marginTop:"8px"}}
+          variant="secondary"
+          onClick={handlePreviousPage}
+          disabled={currentPage === 1}
+          className="mx-3 "
+        >
+         ⪻
+        </Button>
+        <span>
+           {currentPage} of {totalPages}
+        </span>
+        <Button
+        style={{marginTop:"8px"}}
+          variant="secondary"
+          onClick={handleNextPage}
+          disabled={currentPage === totalPages}
+            className="mx-3"
+        >
+        ⪼
+        </Button>
+      </div>
     </Container>
   );
 };

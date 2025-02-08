@@ -4,9 +4,10 @@ import { Table, Form, InputGroup, Container, Button } from "react-bootstrap";
 
 const StaffData = () => {
   const [search, setSearch] = useState("");
-  const [staffs, setStaffs] = useState([]); // State to store the staff data
+  const [staffs, setStaffs] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1); // Track current page
+  const [itemsPerPage] = useState(7); // Set the number of items per page
 
-  // Fetch staff data from backend
   useEffect(() => {
     const fetchStaffs = async () => {
       const token = localStorage.getItem("token");
@@ -34,9 +35,8 @@ const StaffData = () => {
     };
 
     fetchStaffs();
-  }, []); // Runs on initial render and refresh
+  }, []);
 
-  // Toggle staff status (Deactivate or Activate)
   const handleToggleStatus = async (staffId, currentStatus) => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -58,19 +58,35 @@ const StaffData = () => {
 
       // Send request to the backend
       await axios.put(endpoint, {}, { headers: { Authorization: `Bearer ${token}` } });
-
     } catch (error) {
       console.error("Error toggling staff status:", error);
     }
   };
 
-  // Filter staff based on search input
   const filteredStaffs = staffs.filter((staff) =>
     staff.fullName.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Pagination logic
+  const indexOfLastStaff = currentPage * itemsPerPage;
+  const indexOfFirstStaff = indexOfLastStaff - itemsPerPage;
+  const currentStaffs = filteredStaffs.slice(indexOfFirstStaff, indexOfLastStaff);
+
+  const totalPages = Math.ceil(filteredStaffs.length / itemsPerPage);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
   return (
-    <Container className="mt-4" style={{ maxWidth: "2000px", padding: "0", marginLeft: "10px" }}>
+    <Container
+      className="mt-4"
+      style={{ maxWidth: "2000px", padding: "0", marginLeft: "10px" }}
+    >
       <h3 className="text-center mb-4" style={{ color: "teal" }}>
         Staff Information
       </h3>
@@ -99,8 +115,8 @@ const StaffData = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredStaffs.length > 0 ? (
-            filteredStaffs.map((staff, index) => (
+          {currentStaffs.length > 0 ? (
+            currentStaffs.map((staff, index) => (
               <tr key={staff.id}>
                 <td>{index + 1}</td>
                 <td>{staff.fullName}</td>
@@ -127,6 +143,31 @@ const StaffData = () => {
           )}
         </tbody>
       </Table>
+
+      {/* Pagination */}
+      <div className="d-flex justify-content-center align-items-center mx-auto">
+        <Button
+          style={{ marginTop: "8px" }}
+          variant="secondary"
+          onClick={handlePreviousPage}
+          disabled={currentPage === 1}
+          className="mx-3"
+        >
+          ⪻
+        </Button>
+        <span>
+          {currentPage} of {totalPages}
+        </span>
+        <Button
+          style={{ marginTop: "8px" }}
+          variant="secondary"
+          onClick={handleNextPage}
+          disabled={currentPage === totalPages}
+          className="mx-3"
+        >
+          ⪼
+        </Button>
+      </div>
     </Container>
   );
 };

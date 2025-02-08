@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.osms.custom_exception.ResourceNotFoundException;
@@ -31,14 +32,22 @@ public class StaffServiceImple implements StaffService{
 	@Autowired
 	private ModelMapper modelMapper;
 	
-	@Override
-	public ApiResponse registerStaff(StaffRegistrationReqDto staffRegistrationDTO) {
-		
-		User transientStaff = modelMapper.map(staffRegistrationDTO, User.class);
-		 User persistenResident = staffDao.save(transientStaff);
-		 return new ApiResponse("Added new category with Id"+persistenResident.getId());	
-		
-	}
+	 @Autowired
+	    private PasswordEncoder passwordEncoder;  // Inject PasswordEncoder
+
+	    @Override
+	    public ApiResponse registerStaff(StaffRegistrationReqDto staffRegistrationDTO) {
+	        
+	        User transientStaff = modelMapper.map(staffRegistrationDTO, User.class);
+
+	        // Encode the password before saving it
+	        String encodedPassword = passwordEncoder.encode(staffRegistrationDTO.getPassword());
+	        transientStaff.setPassword(encodedPassword);  // Set the encoded password
+
+	        User persistedStaff = staffDao.save(transientStaff);
+
+	        return new ApiResponse("Added new staff with ID: " + persistedStaff.getId());
+	    }
 
 	@Override
 	public List<TaskResponseDto> getTasksForCleaners() {

@@ -3,70 +3,156 @@ package com.osms.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.osms.dtos.ApiResponse;
+import com.osms.dtos.ForgotPasswordRequestDTO;
+import com.osms.dtos.ResetPasswordRequestDTO;
+import com.osms.dtos.UserDTO;
+import com.osms.dtos.UserUpdateReqDTO;
 import com.osms.pojos.User;
+import com.osms.service.UserService;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/auth")
+//@CrossOrigin(origins="http://localhost:3000")
 public class AuthController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+	@Autowired
+	private AuthenticationManager authenticationManager;
 
-    @Autowired
-    private JwtUtils jwtUtils;
+	@Autowired
+	private JwtUtils jwtUtils;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getEmail(),
-                        loginRequest.getPassword()
-                )
-        );
+	@Autowired
+	private UserService userService;
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
+	@Autowired
+	private JavaMailSender mailSender;
 
-        CustomUserDetailsImpl userDetails = (CustomUserDetailsImpl) authentication.getPrincipal();
-        User user = userDetails.getUserEntity();
+	@PostMapping("/login")
+	public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
 
-        Map<String, Object> response = Map.of(
-        	    "token", jwt,
-        	    "user", Map.of(
-        	        "id", user.getId() != null ? user.getId() : "Unknown", //we handle null safety here as nullpointerExceptionOccur
-        	       "email",user.getEmail()!=null ? user.getEmail() :"unknown",
-        	        "fullName", user.getFullName() != null ? user.getFullName() : "Unknown", 
-        	        "mobileNo", user.getMobileNo() != null ? user.getMobileNo() : "Unknown", 
-        	        "role", user.getRole() != null ? user.getRole().name() : "Unknown", 
-        	        "flatNumber", user.getFlat() != null && user.getFlat().getFlatNumber() != null ? user.getFlat().getFlatNumber() : "Unknown" // Handle null safely
-        	    )
-        	);
+		Authentication authentication = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
-        return ResponseEntity.ok(response);
-    }
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		String jwt = jwtUtils.generateJwtToken(authentication);
 
-    
-//    catch (BadCredentialsException ex) {
-//        // Handle the case where credentials are incorrect
-//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-//            .body(new ApiResponse("Invalid email or password"));
-//    } catch (Exception ex) {
-//        // Handle other unexpected exceptions
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//            .body(new ApiResponse("An error occurred during authentication"));
-//    }
+		CustomUserDetailsImpl userDetails = (CustomUserDetailsImpl) authentication.getPrincipal();
+		User user = userDetails.getUserEntity();
+
+		Map<String, Object> response = Map.of("token", jwt, "user",
+				Map.of("id", user.getId() != null ? user.getId() : "Unknown", // we handle null safety here as
+																				// nullpointerExceptionOccur
+						"email", user.getEmail() != null ? user.getEmail() : "unknown", "fullName",
+						user.getFullName() != null ? user.getFullName() : "Unknown", "mobileNo",
+						user.getMobileNo() != null ? user.getMobileNo() : "Unknown", "role",
+						user.getRole() != null ? user.getRole().name() : "Unknown", "flatNumber",
+						user.getFlat() != null && user.getFlat().getFlatNumber() != null
+								? user.getFlat().getFlatNumber()
+								: "Unknown" // Handle null safely
+				));
+
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/forgot-password")
+	public ApiResponse forgotPassword(@RequestBody ForgotPasswordRequestDTO request) {
+		String email = request.getEmail();
+		User user = userService.findUserByEmail(email);
+
+		if (user == null) {
+			return new ApiResponse("Email not found");
+		}
+
+		// Generate a unique reset token
+		String token = UUID.randomUUID().toString();
+
+		// database me save token
+		userService.savePasswordResetToken(user, token);
+
+		// Send email with the reset link
+		String resetLink = "http://localhost:3000/reset-password/" + token;
+		sendResetPasswordEmail(email, resetLink);
+
+		return new ApiResponse("Password reset link sent to your email.");
+	}
+
+	public void sendResetPasswordEmail(String email, String resetLink) {
+		try {
+			MimeMessage message = mailSender.createMimeMessage();
+			MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+			helper.setTo(email);
+			helper.setFrom("no-reply@yourdomain.com");
+			helper.setSubject("🔒 Password Reset Request");
+
+			String emailContent = "<html>" + "<body style=\"font-family: Arial, sans-serif; text-align: center;\">"
+					+ "<h2 style=\"color: #007bff;\">Password Reset Request</h2>" + "<p>Hello,</p>"
+					+ "<p>You recently requested to reset your password. Click the button below to proceed:</p>" + "<p>"
+					+ "<a href=\"" + resetLink + "\" "
+					+ "style=\"background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;\">"
+					+ "Reset Password" + "</a>" + "</p>"
+					+ "<p>If you did not request a password reset, please ignore this email.</p>"
+					+ "<p>Best Regards,</p>" + "<p><b>Online Society Management system</b></p>" + "</body>" + "</html>";
+
+			helper.setText(emailContent, true); // Enables HTML content
+
+			mailSender.send(message);
+		} catch (MessagingException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Failed to send email", e);
+		}
+	}
+
+	@PostMapping("/reset-password/{token}")
+	public ApiResponse resetPassword(@PathVariable String token, @RequestBody ResetPasswordRequestDTO request) {
+		String newPassword = request.getNewPassword();
+		User user = userService.findUserByResetToken(token);
+
+		if (user == null) {
+			return new ApiResponse("Invalid or expired token");
+		}
+
+		userService.updatePassword(user, newPassword);
+		return new ApiResponse("Password reset successfully.");
+	}
+	
+
+	@GetMapping("/getall/{id}")
+	public ResponseEntity<UserUpdateReqDTO> getUserById(@PathVariable Long id) {
+		UserUpdateReqDTO user = userService.getUserById(id);
+		return ResponseEntity.ok(user);
+	}
+
+	
+	// Update user details
+	@PutMapping("/updateone/{id}")
+	public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody UserUpdateReqDTO updateUserDTO) {
+		userService.updateUser(id, updateUserDTO);
+		return ResponseEntity.ok("User updated successfully!");
+	}
 }
-

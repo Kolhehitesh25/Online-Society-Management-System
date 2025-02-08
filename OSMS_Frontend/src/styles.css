@@ -19,8 +19,8 @@ color: aqua;
 }
 
 .dropdown-item:hover {
-  background-color: #343a40; /* Dark background on hover */
-  color: #baedef !important;
+  background-color: #393c3f; /* Dark background on hover */
+  color: #4f9da0 !important;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -58,6 +58,7 @@ color: aqua;
   color: #007bff !important; 
   font-weight: bold;
 }
+
 
 
 .custom-dropdown-item:hover {

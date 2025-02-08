@@ -10,9 +10,10 @@ const PrivateRoute = ({ allowedRoles }) => {
   }
 
   if (!allowedRoles.includes(role)) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/home"  />;
   }
   
+
 //render into child component
   return <Outlet />;
 };

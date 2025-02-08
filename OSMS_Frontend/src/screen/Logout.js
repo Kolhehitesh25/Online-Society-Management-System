@@ -10,11 +10,8 @@ const Logout = () => {
   
     localStorage.removeItem("token");
     localStorage.removeItem("role");
-    localStorage.removeItem("fullName");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("email");
-    localStorage.removeItem("mobileNo");
-    localStorage.removeItem("flatNumber");
+    localStorage.removeItem("user");
+    
 
    
 

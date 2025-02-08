@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -6,11 +7,14 @@ import AuthService from "../services/AuthService";
 import axios from "axios";
 import { toast } from "react-toastify";
 
+import { Eye, EyeSlash } from "react-bootstrap-icons"; 
+
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   
   const navigate = useNavigate();
 
@@ -23,7 +27,10 @@ const Login = () => {
 
         if (token) {
           axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+          localStorage.setItem("token", token);
+          localStorage.setItem("role", user.role); 
         }
+      
         if (user.role === "ADMIN") {
           navigate("/admin");
           toast.success(`Successfully logged in as ${user.fullName}`);
@@ -85,20 +92,27 @@ const Login = () => {
             />
           </div>
 
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label">
-              Password:
-            </label>
-            <input
-              type="password"
-              className="form-control"
-              id="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+          <div className="mb-3 position-relative">
+      <label htmlFor="password" className="form-label">Password:</label>
+      <div className="input-group">
+        <input
+          type={showPassword ? "text" : "password"}
+          className="form-control"
+          id="password"
+          placeholder="Enter your password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <span
+          className="input-group-text"
+          style={{ cursor: "pointer" }}
+          onClick={() => setShowPassword(!showPassword)}
+        >
+          {showPassword ? <EyeSlash /> : <Eye />}
+        </span>
+      </div>
+    </div>
 
           <div className="text-center mt-3">
             <button
@@ -157,7 +171,7 @@ const Login = () => {
 </p>
 
         <p className="text-center mt-3">
-          <Link href="/forgot-password">Forgot your password?</Link>
+          <Link to="/forgot-password">Forgot your password?</Link>
         </p>
       </div>
     </div>

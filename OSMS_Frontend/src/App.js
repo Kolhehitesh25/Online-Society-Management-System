@@ -25,6 +25,7 @@ import FacilityBooking from "./components/FacilityBooking";
 import PrivateRoute from "./components/PrivateRoute";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
+import PayBill from "./components/PayBill"; // ✅ Import PayBill
 
 function App() {
   return (
@@ -41,8 +42,7 @@ function App() {
 
         <Route path="/login" element={<Login />} />
 
-        {/* i used child route inside parent */}
-        {/* protected route kept here */}
+        {/* Protected Routes */}
         <Route element={<PrivateRoute allowedRoles={["ADMIN"]} />}>
           <Route path="/admin" element={<AdminDashboard />}>
             <Route index element={<AdminDashboardData />} />
@@ -59,8 +59,12 @@ function App() {
         >
           <Route path="/staff" element={<StaffDashboard />} />
         </Route>
+
         <Route element={<PrivateRoute allowedRoles={["RESIDENT"]} />}>
-          <Route path="/resident" element={<ResidentDashboard />} />
+          <Route path="/resident" element={<ResidentDashboard />}>
+            <Route path="pay-bill" element={<PayBill />} />{" "}
+            {/* ✅ Added PayBill route */}
+          </Route>
         </Route>
 
         <Route path="/logout" element={<Logout />} />

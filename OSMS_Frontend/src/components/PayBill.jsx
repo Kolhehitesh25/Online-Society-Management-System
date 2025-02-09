@@ -1,38 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const PayBill = () => {
-  const [amount, setAmount] = useState(1500); // Default amount
+  const [amount, setAmount] = useState(1500);
+  const [isPaid, setIsPaid] = useState(false);
+  const [message, setMessage] = useState("");
+
+  // Load payment status from localStorage when the component mounts
+  useEffect(() => {
+    const paidStatus = localStorage.getItem("paymentStatus");
+    if (paidStatus === "true") {
+      setIsPaid(true);
+      setMessage("✅ Payment Successful! Your bill has been paid.");
+    }
+  }, []);
 
   const handlePayment = async () => {
     console.log("Payment Started");
 
     try {
-      // 1️⃣ Call the backend to create an order
       const response = await axios.post(
         "http://localhost:8080/api/payment/create-order",
         null,
-        {
-          params: { amount: amount },
-        }
+        { params: { amount: amount } }
       );
 
       const order = response.data;
       console.log("Order Created: ", order);
 
-      // 2️⃣ Load Razorpay
       const options = {
-        key: "rzp_test_JqXu6d6rg1MSt5", // Replace with your Razorpay Key ID
+        key: "rzp_test_JqXu6d6rg1MSt5",
         amount: order.amount,
         currency: order.currency,
         name: "Society Management",
         description: "Pay Society Maintenance",
-        order_id: order.id, // Order ID from backend
+        order_id: order.id,
         handler: function (response) {
           console.log("Payment Successful:", response);
-          alert(
-            "Payment Successful! Payment ID: " + response.razorpay_payment_id
+          setMessage(
+            "✅ Payment Successful! Payment ID: " + response.razorpay_payment_id
           );
+          setIsPaid(true);
+
+          // Save payment status in localStorage
+          localStorage.setItem("paymentStatus", "true");
         },
         prefill: {
           name: "Resident",
@@ -40,7 +51,7 @@ const PayBill = () => {
           contact: "9876543210",
         },
         theme: {
-          color: "#3399cc",
+          color: "#2563EB",
         },
       };
 
@@ -48,14 +59,40 @@ const PayBill = () => {
       razorpay.open();
     } catch (error) {
       console.error("Error during payment:", error);
+      setMessage("❌ Payment Failed! Please try again.");
     }
   };
 
   return (
-    <div>
-      <h2>Pay Maintenance</h2>
-      <p>Amount: ₹{amount}</p>
-      <button onClick={handlePayment}>Pay Now</button>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="bg-white shadow-lg rounded-lg p-6 w-96 text-center">
+        <h2 className="text-2xl font-semibold text-black mb-4">Pay Maintenance</h2>
+        <p className="text-lg text-black">
+          Amount: <span className="font-bold">₹{amount}</span>
+        </p>
+
+        <button
+          onClick={handlePayment}
+          disabled={isPaid}
+          className={`w-full mt-4 py-2 text-black font-semibold rounded-lg transition duration-300 ${
+            isPaid
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-green-600 hover:bg-green-700"
+          }`}
+        >
+          {isPaid ? "Payment Completed" : "Pay Now"}
+        </button>
+
+        {message && (
+          <div
+            className={`mt-4 p-3 rounded-lg text-black text-sm font-medium ${
+              isPaid ? "bg-green-300" : "bg-red-300"
+            }`}
+          >
+            {message}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

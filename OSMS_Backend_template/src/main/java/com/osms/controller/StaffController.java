@@ -62,4 +62,11 @@ public class StaffController {
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 						.body(new ApiResponse(e.getMessage()));
 			}	 }
+	
+	
+	@GetMapping("/staff-tasks")
+	public ResponseEntity<List<TaskResponseDto>> getAllTasks() {
+        List<TaskResponseDto> tasks = staffService.getAllTasks();
+        return ResponseEntity.ok(tasks);
+    }	
 }

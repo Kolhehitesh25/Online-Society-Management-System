@@ -77,5 +77,15 @@ public class StaffServiceImple implements StaffService{
 		taskDao.save(rs);
 		return new ApiResponse("Task Completed!");
     }
+
+	@Override
+	public List<TaskResponseDto> getAllTasks() {
+		List<Tasks> tasks = taskDao.findAll();
+		return tasks.stream().map(task -> {
+            TaskResponseDto dto = modelMapper.map(task, TaskResponseDto.class);
+            dto.setStaff(task.getStaff().getFullName());
+            return dto;
+        }).collect(Collectors.toList());	
+	}
 	}
 

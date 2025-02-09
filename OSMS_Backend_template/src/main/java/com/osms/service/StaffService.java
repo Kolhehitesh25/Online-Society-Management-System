@@ -16,5 +16,7 @@ public interface StaffService {
 
 	ApiResponse updateTasksStatus(Long tasksId);
 
+	List<TaskResponseDto> getAllTasks();
+
 	
 }

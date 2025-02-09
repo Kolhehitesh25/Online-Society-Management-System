@@ -14,10 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.osms.dtos.ApiResponse;
+import com.osms.dtos.GetTasksbyIdResponseDto;
 import com.osms.dtos.ResidentPaymentResponseDto;
 import com.osms.dtos.ResidentRegistrationReqDto;
 import com.osms.dtos.StaffRegistrationReqDto;
 import com.osms.dtos.TaskResponseDto;
+import com.osms.pojos.Tasks;
+import com.osms.pojos.User;
 import com.osms.service.StaffService;
 
 
@@ -64,9 +67,16 @@ public class StaffController {
 			}	 }
 	
 	
-	@GetMapping("/staff-tasks")
+	@GetMapping("/staff-alltasks")
 	public ResponseEntity<List<TaskResponseDto>> getAllTasks() {
         List<TaskResponseDto> tasks = staffService.getAllTasks();
         return ResponseEntity.ok(tasks);
     }	
+	
+	 @GetMapping("/assigned/{userId}")
+	    public List<GetTasksbyIdResponseDto> getTasksByUser(@PathVariable Long userId) {
+	        User user = new User();  // Assuming User has a constructor with just an ID.
+	        user.setId(userId);  
+	        return staffService.getTasksByAssignedUser(user);
+	}
 }

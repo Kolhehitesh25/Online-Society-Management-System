@@ -10,7 +10,6 @@ import AdminDashboard from "./components/AdminDashboard";
 import StaffDashboard from "./components/StaffDashboard";
 import ResidentDashboard from "./components/ResidentDashboard";
 
-
 import HomePage from "./screen/HomePage";
 import StaffRegister from "./screen/StaffRegister";
 import ResidentRegister from "./screen/ResidentRegister";
@@ -65,7 +64,7 @@ function App() {
         </Route>
 
         <Route path="/logout" element={<Logout />} />
-        <Route path="/forgot-password" element={<ForgotPassword/>}/>
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>
     </div>

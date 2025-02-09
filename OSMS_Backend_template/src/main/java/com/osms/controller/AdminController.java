@@ -147,10 +147,19 @@ public class AdminController {
 	    }
 	 
 
-	    @GetMapping("/dashboard-stats")
+	 @GetMapping("/dashboard-stats")
 	    public ResponseEntity<Map<String, Long>> getDashboardStats() {
 	        Map<String, Long> stats = adminService.getUserStats();
 	        return ResponseEntity.ok(stats);
 	    }
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
 }
 

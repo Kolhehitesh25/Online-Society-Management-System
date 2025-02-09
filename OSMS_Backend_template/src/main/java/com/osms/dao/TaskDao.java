@@ -23,4 +23,11 @@ public interface TaskDao extends JpaRepository<Tasks, Long> {
 
 	@Query("SELECT t FROM Tasks t WHERE t.staff = :user")
     List<Tasks> findByAssignedTo(@Param("user") User user);
+
+	long countByStatus(String status);
+	
+//	@Query("SELECT COUNT(t) FROM Task t WHERE t.status = :status")
+//	long countTasksByStatus(@Param("status") String status);
+
+
 }

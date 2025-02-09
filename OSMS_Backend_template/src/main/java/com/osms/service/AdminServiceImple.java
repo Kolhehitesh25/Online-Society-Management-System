@@ -248,19 +248,33 @@ public class AdminServiceImple implements AdminService {
 
 	@Override
 	public Map<String, Long> getUserStats() {
-		long residentCount = userDao.countByRole(UserRole.RESIDENT);
-		long cleanerCount = userDao.countByRole(UserRole.CLEANER);
-		long securityCount = userDao.countByRole(UserRole.SECURITY);
-		long totalCount = residentCount + securityCount + cleanerCount;
+	    long residentCount = userDao.countByRole(UserRole.RESIDENT);
+	    long cleanerCount = userDao.countByRole(UserRole.CLEANER);
+	    long securityCount = userDao.countByRole(UserRole.SECURITY);
+	    long totalCount = residentCount + securityCount + cleanerCount;
 
-		// Return the count data as a map
-		Map<String, Long> stats = new HashMap<>();
-		stats.put("residentCount", residentCount);
-		stats.put("cleanerCount", cleanerCount);
-		stats.put("securityCount", securityCount);
-		stats.put("totalCount", totalCount);
+	    // Debug log before querying tasks
+	    System.out.println("Fetching task counts...");
 
-		return stats;
+	    // Count tasks based on status
+	    long pendingTasks = taskDao.countByStatus("pending");
+	    long completedTasks = taskDao.countByStatus("completed");
+
+	    // Debug log after querying tasks
+	    System.out.println("Pending Tasks: " + pendingTasks);
+	    System.out.println("Completed Tasks: " + completedTasks);
+
+	    // Return the count data as a map
+	    Map<String, Long> stats = new HashMap<>();
+	    stats.put("residentCount", residentCount);
+	    stats.put("cleanerCount", cleanerCount);
+	    stats.put("securityCount", securityCount);
+	    stats.put("totalCount", totalCount);
+	    stats.put("pendingTasks", pendingTasks);
+	    stats.put("completedTasks", completedTasks);
+
+	    return stats;
 	}
+
 
 }

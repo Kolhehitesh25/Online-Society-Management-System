@@ -59,6 +59,7 @@ public class StaffServiceImple implements StaffService{
         }).collect(Collectors.toList());
 		
 	}
+	
 
 	@Override
 	public List<TaskResponseDto> getTasksForSecurity() {
@@ -70,6 +71,7 @@ public class StaffServiceImple implements StaffService{
         }).collect(Collectors.toList());	
 	}
 
+	
 	@Override
 	public ApiResponse updateTasksStatus(Long tasksId) {
 		Tasks rs = taskDao.findById(tasksId).orElseThrow(()-> new ResourceNotFoundException("Invalid Id.."));

@@ -1,12 +1,14 @@
-import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { Table, Form, InputGroup, Container, Button } from "react-bootstrap";
+import axios from "axios";
+import { Table, Container, Card, Spinner, Form, InputGroup } from "react-bootstrap";
+import PaginationComponent from "../Pagination";
 
 const StaffData = () => {
-  const [search, setSearch] = useState("");
   const [staffs, setStaffs] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1); // Track current page
-  const [itemsPerPage] = useState(7); // Set the number of items per page
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState(""); // Search state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(7);
 
   useEffect(() => {
     const fetchStaffs = async () => {
@@ -22,15 +24,17 @@ const StaffData = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        // Ensure staff status is correctly mapped
+        // Ensure status is a boolean
         const updatedStaffs = response.data.map((staff) => ({
           ...staff,
-          status: staff.status === true, // Ensure status is always a boolean
+          status: staff.status === true,
         }));
 
         setStaffs(updatedStaffs);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching staff data:", error);
+        setLoading(false);
       }
     };
 
@@ -49,22 +53,23 @@ const StaffData = () => {
         ? `http://localhost:8080/admin/deactivate/staff/${staffId}`
         : `http://localhost:8080/admin/activate/staff/${staffId}`;
 
-      // Optimistically update the UI
+      // Optimistic UI update
       setStaffs((prevStaffs) =>
         prevStaffs.map((staff) =>
           staff.id === staffId ? { ...staff, status: !currentStatus } : staff
         )
       );
 
-      // Send request to the backend
+      // Send request to backend
       await axios.put(endpoint, {}, { headers: { Authorization: `Bearer ${token}` } });
     } catch (error) {
       console.error("Error toggling staff status:", error);
     }
   };
 
+  // Filter staff based on search query
   const filteredStaffs = staffs.filter((staff) =>
-    staff.fullName.toLowerCase().includes(search.toLowerCase())
+    staff.fullName.toLowerCase().includes(search.toLowerCase()) || staff.email.toLowerCase().includes(search.toLowerCase())
   );
 
   // Pagination logic
@@ -74,100 +79,83 @@ const StaffData = () => {
 
   const totalPages = Math.ceil(filteredStaffs.length / itemsPerPage);
 
-  const handleNextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-  };
-
-  const handlePreviousPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  };
-
   return (
-    <Container
-      className="mt-4"
-      style={{ maxWidth: "2000px", padding: "0", marginLeft: "10px" }}
-    >
-      <h3 className="text-center mb-4" style={{ color: "teal" }}>
-        Staff Information
-      </h3>
+    <Container className="mt-4">
+      <Card className="shadow-lg p-3">
+        <h3 className="text-center mb-3" style={{ color: "teal" }}>
+          Staff Information
+        </h3>
 
-      {/* Search Bar */}
-      <InputGroup className="mb-3">
-        <InputGroup.Text>🔍</InputGroup.Text>
-        <Form.Control
-          type="text"
-          placeholder="Search by Name..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </InputGroup>
+        {/* Search Bar */}
+        <InputGroup className="mb-3">
+          <InputGroup.Text>🔍</InputGroup.Text>
+          <Form.Control
+            type="text"
+            placeholder="Search by Name or email."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              
+            }}
+          />
+        </InputGroup>
 
-      {/* Table */}
-      <Table striped bordered hover responsive className="text-center shadow-lg">
-        <thead className="bg-dark text-light">
-          <tr>
-            <th>S.No</th>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentStaffs.length > 0 ? (
-            currentStaffs.map((staff, index) => (
-              <tr key={staff.id}>
-                <td>{index + 1}</td>
-                <td>{staff.fullName}</td>
-                <td>{staff.mobileNo}</td>
-                <td>{staff.email}</td>
-                <td>{staff.role}</td>
-                <td>
-                  <Button
-                    variant={staff.status ? "danger" : "success"} // Red for Deactivate, Green for Activate
-                    size="md"
-                    onClick={() => handleToggleStatus(staff.id, staff.status)}
-                  >
-                    {staff.status ? "Delete" : "Restore"}
-                  </Button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="6" className="text-center text-danger">
-                No Staff Found
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </Table>
+        {loading ? (
+          <div className="text-center">
+            <Spinner animation="border" variant="primary" />
+          </div>
+        ) : (
+          <>
+            <Table striped bordered hover responsive className="text-center mt-4">
+              <thead className="bg-dark text-white">
+                <tr>
+                  <th>S.No</th>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentStaffs.length > 0 ? (
+                  currentStaffs.map((staff, index) => (
+                    <tr key={staff.id}>
+                       <td>{staffs.indexOf(staff) + 1}</td>
+                      <td>{staff.fullName}</td>
+                      <td>{staff.mobileNo}</td>
+                      <td>{staff.email}</td>
+                      <td>{staff.role}</td>
+                      <td>
+                        <button
+                          className={`btn ${staff.status ? "btn-danger" : "btn-success"}`}
+                          onClick={() => handleToggleStatus(staff.id, staff.status)}
+                        >
+                          {staff.status ? "Delete" : "Restore"}
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="text-center text-danger">
+                      No Staff Found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </Table>
 
-      {/* Pagination */}
-      <div className="d-flex justify-content-center align-items-center mx-auto">
-        <Button
-          style={{ marginTop: "8px" }}
-          variant="secondary"
-          onClick={handlePreviousPage}
-          disabled={currentPage === 1}
-          className="mx-3"
-        >
-          ⪻
-        </Button>
-        <span>
-          {currentPage} of {totalPages}
-        </span>
-        <Button
-          style={{ marginTop: "8px" }}
-          variant="secondary"
-          onClick={handleNextPage}
-          disabled={currentPage === totalPages}
-          className="mx-3"
-        >
-          ⪼
-        </Button>
-      </div>
+            {/* Use Pagination Component */}
+            <PaginationComponent
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPrevious={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              onNext={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            />
+          </>
+        )}
+      </Card>
     </Container>
   );
 };

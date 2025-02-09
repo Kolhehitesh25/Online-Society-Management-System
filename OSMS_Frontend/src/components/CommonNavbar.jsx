@@ -29,26 +29,23 @@ const CommonNavbar = () => {
   
       const userData = await getUserById(storedUser.userId, token);
   
-      // ✅ Ensure ID is correctly set
       const userWithRole = { 
         ...userData, 
         id: storedUser.userId,  // Make sure ID is not missing
-        role: storedUser.role 
+        role: storedUser.role ,
+        flatNumber:storedUser.flatNumber
       };
   
       setUser(userWithRole);
       setUpdatedUser(userWithRole);
   
-      console.log("✅ Fetched User Data:", userWithRole); // Debug log
+      // console.log(" Fetched User Data:", userWithRole); // Debug log
     } catch (error) {
-      console.error("❌ Error fetching user data:", error);
+      console.error("Error fetching user data:", error);
     }
   };
   
   
-  
-  
-
   useEffect(() => {
     console.log(localStorage.getItem(user))
     fetchUserData(); 
@@ -70,24 +67,24 @@ const CommonNavbar = () => {
     try {
       const token = localStorage.getItem("token");
       
-      console.log("⚡ Attempting to update profile with:", { 
+      console.log(" Attempting to update profile with:", { 
         id: user?.id, 
         updatedUser, 
         token 
       });
   
       if (!user?.id) {
-        toast.error("❌ User ID is missing.");
+        toast.error("User ID is missing.");
         return;
       }
   
       await updateUser(user.id, updatedUser, token);
-      toast.success("✅ Profile updated successfully!");
+      toast.success("Profile updated successfully!");
   
-      fetchUserData(); // Refresh data
+      fetchUserData(); 
       handleUpdateModalClose();
     } catch (error) {
-      console.error("❌ Error updating profile:", error);
+      console.error(" Error updating profile:", error);
       toast.error("Failed to update profile");
     }
   };
@@ -150,7 +147,7 @@ const CommonNavbar = () => {
                 <Dropdown.Menu>
                   <Dropdown.Item onClick={handleViewModalShow}>View Profile</Dropdown.Item>
                   <Dropdown.Item onClick={handleUpdateModalShow}>Update Profile</Dropdown.Item> 
-                  <Dropdown.Item href="/setting">Setting</Dropdown.Item>
+                  {/* <Dropdown.Item href="/setting">Setting</Dropdown.Item> */}
                   <Dropdown.Item href="/logout">Logout</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>

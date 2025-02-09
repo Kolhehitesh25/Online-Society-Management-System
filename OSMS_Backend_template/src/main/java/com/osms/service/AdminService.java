@@ -7,6 +7,7 @@ import com.osms.dtos.AdminLoginRequestDto;
 import com.osms.dtos.AdminLoginResponseDto;
 import com.osms.dtos.ApiResponse;
 import com.osms.dtos.AssignTaskDto;
+import com.osms.dtos.ComplaintRespDto;
 import com.osms.dtos.FacilityBookingRespDto;
 import com.osms.dtos.ResidentDTO;
 import com.osms.dtos.ResidentPaymentResponseDto;
@@ -42,6 +43,10 @@ public interface AdminService {
 	ApiResponse activateStaff(Long staffId);
 
 	Map<String, Long> getUserStats();
+
+	List<ComplaintRespDto> getAllComplaints();
+
+	ApiResponse resolvedComplaint(Long complaintId);
 
 
 

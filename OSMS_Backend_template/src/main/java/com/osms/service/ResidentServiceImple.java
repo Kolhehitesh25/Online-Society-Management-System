@@ -2,17 +2,22 @@ package com.osms.service;
 
 
 import com.osms.dtos.ApiResponse;
+import com.osms.dtos.ComplaintDto;
+import com.osms.dtos.ComplaintRespDto;
 import com.osms.dtos.DisplayNotificationDto;
 import com.osms.dtos.FacilityBookingDto;
 import com.osms.dtos.PaymentUpdateRequestDto;
+import com.osms.dtos.ResidentFacilityBookingDto;
 import com.osms.dtos.ResidentPaymentDto;
 import com.osms.dtos.ResidentPaymentResponseDto;
 import com.osms.dtos.ResidentRegistrationReqDto;
+import com.osms.pojos.Complaint;
 import com.osms.pojos.FacilityBooking;
 import com.osms.pojos.Flat;
 import com.osms.pojos.Payment;
 import com.osms.pojos.User;
 import com.osms.custom_exception.ResourceNotFoundException;
+import com.osms.dao.ComplaintDao;
 import com.osms.dao.FacilityBookingDao;
 import com.osms.dao.FlatDao;
 import com.osms.dao.NotificationDao;
@@ -49,6 +54,8 @@ public class ResidentServiceImple implements ResidentService {
     @Autowired
     private FacilityBookingDao facilityBookingDao;
     
+    @Autowired
+    private ComplaintDao complaintDao;
     @Autowired
 	private ModelMapper modelMapper;
 	
@@ -150,6 +157,55 @@ public class ResidentServiceImple implements ResidentService {
 
 		    return new ApiResponse("Facility booked successfully!");
 	
+	}
+
+
+
+	@Override
+	public ApiResponse registerComplaint(Long residentId, ComplaintDto complaintDto) {
+		 User resident = userDao.findById(residentId)
+	                .orElseThrow(() -> new RuntimeException("Resident not found!"));
+
+	        Complaint complaint = new Complaint();
+	        complaint.setDescription(complaintDto.getMessage());
+	        complaint.setResident(resident);
+	        
+	        Complaint savedComplaint = complaintDao.save(complaint);
+
+	        return new ApiResponse("Complaint added successfully");
+	        
+	}
+
+
+
+	@Override
+	public List<ComplaintRespDto> getComplaintsByResident(Long residentId) {
+		 List<ComplaintRespDto> complaints = complaintDao.findByResidentId(residentId);
+
+	        return complaints.stream().map(complaint -> new ComplaintRespDto(
+	                complaint.getId(),
+	                complaint.getMessage(),
+	                complaint.getStatus(),
+	                complaint.getFullName(),
+	                complaint.getSentDateTime()
+	                
+	        )).collect(Collectors.toList());
+	}
+
+
+
+	@Override
+	public List<ResidentFacilityBookingDto> getFacilityByResident(Long residentId) {
+		 List<ResidentFacilityBookingDto> facilities = facilityBookingDao.findByResidentId(residentId);
+
+	        return facilities.stream().map(facility -> new ResidentFacilityBookingDto(
+	                facility.getId(),
+	                facility.getFacilityName(),
+	                facility.getFromDateTime(),
+	                facility.getToDateTime(),
+	                facility.getStatus()
+	                
+	        )).collect(Collectors.toList());
 	}
 
 

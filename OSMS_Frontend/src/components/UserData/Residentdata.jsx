@@ -1,12 +1,13 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { Table, Form, InputGroup, Container, Button } from "react-bootstrap";
+import PaginationComponent from "../Pagination";
 
 const Residentdata = () => {
   const [search, setSearch] = useState("");
   const [residents, setResidents] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1); // Track current page
-  const [itemsPerPage] = useState(7); // Set the number of items per page
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(7);
 
   useEffect(() => {
     const fetchResidents = async () => {
@@ -20,9 +21,7 @@ const Residentdata = () => {
       try {
         const response = await axios.get(
           "http://localhost:8080/admin/all-residents",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
 
         const updatedResidents = response.data.map((resident) => ({
@@ -59,11 +58,7 @@ const Residentdata = () => {
         )
       );
 
-      await axios.put(
-        endpoint,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await axios.put(endpoint, {}, { headers: { Authorization: `Bearer ${token}` } });
     } catch (error) {
       console.error("Error toggling resident status:", error);
     }
@@ -73,32 +68,14 @@ const Residentdata = () => {
     resident.fullName.toLowerCase().includes(search.toLowerCase())
   );
 
-  //pagination logic
   const indexOfLastResident = currentPage * itemsPerPage;
   const indexOfFirstResident = indexOfLastResident - itemsPerPage;
-  const currentResidents = filteredResidents.slice(
-    indexOfFirstResident,
-    indexOfLastResident
-  );
-
+  const currentResidents = filteredResidents.slice(indexOfFirstResident, indexOfLastResident);
   const totalPages = Math.ceil(filteredResidents.length / itemsPerPage);
 
-  const handleNextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-  };
-
-  const handlePreviousPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  };
-
   return (
-    <Container
-      className="mt-4"
-      style={{ maxWidth: "2000px", padding: "0", marginLeft: "10px" }}
-    >
-      <h3 className="text-center mb-4" style={{ color: "teal" }}>
-        Resident Information
-      </h3>
+    <Container className="mt-4" style={{ maxWidth: "2000px", padding: "0", marginLeft: "10px" }}>
+      <h3 className="text-center mb-4" style={{ color: "teal" }}>Resident Information</h3>
 
       {/* Search Bar */}
       <InputGroup className="mb-3">
@@ -112,13 +89,7 @@ const Residentdata = () => {
       </InputGroup>
 
       {/* Table */}
-      <Table
-        striped
-        bordered
-        hover
-        responsive
-        className="text-center shadow-lg"
-      >
+      <Table striped bordered hover responsive className="text-center shadow-lg">
         <thead className="bg-dark text-light">
           <tr>
             <th>S.No</th>
@@ -133,18 +104,16 @@ const Residentdata = () => {
           {currentResidents.length > 0 ? (
             currentResidents.map((resident, index) => (
               <tr key={resident.id}>
-                <td>{index + 1}</td>
+                  <td>{residents.indexOf(resident) + 1}</td>
                 <td>{resident.fullName}</td>
                 <td>{resident.flatNumber}</td>
                 <td>{resident.mobileNo}</td>
                 <td>{resident.email}</td>
                 <td>
                   <Button
-                    variant={resident.status ? "danger" : "success"} // Red for Delete, Green for Restore
+                    variant={resident.status ? "danger" : "success"}
                     size="md"
-                    onClick={() =>
-                      handleToggleStatus(resident.id, resident.status)
-                    }
+                    onClick={() => handleToggleStatus(resident.id, resident.status)}
                   >
                     {resident.status ? "Delete" : "Restore"}
                   </Button>
@@ -161,29 +130,13 @@ const Residentdata = () => {
         </tbody>
       </Table>
 
-      {/* Pagination */}
-      <div className="d-flex justify-content-center align-items-center mx-auto">
-        <Button style={{marginTop:"8px"}}
-          variant="secondary"
-          onClick={handlePreviousPage}
-          disabled={currentPage === 1}
-          className="mx-3 "
-        >
-         ⪻
-        </Button>
-        <span>
-           {currentPage} of {totalPages}
-        </span>
-        <Button
-        style={{marginTop:"8px"}}
-          variant="secondary"
-          onClick={handleNextPage}
-          disabled={currentPage === totalPages}
-            className="mx-3"
-        >
-        ⪼
-        </Button>
-      </div>
+      {/* Use Pagination Component */}
+      <PaginationComponent
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPrevious={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+        onNext={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+      />
     </Container>
   );
 };

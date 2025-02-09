@@ -12,6 +12,7 @@ import com.osms.custom_exception.ResourceNotFoundException;
 import com.osms.dao.StaffDao;
 import com.osms.dao.TaskDao;
 import com.osms.dtos.ApiResponse;
+import com.osms.dtos.GetTasksbyIdResponseDto;
 import com.osms.dtos.StaffRegistrationReqDto;
 import com.osms.dtos.TaskResponseDto;
 import com.osms.pojos.Tasks;
@@ -79,5 +80,36 @@ public class StaffServiceImple implements StaffService{
 		taskDao.save(rs);
 		return new ApiResponse("Task Completed!");
     }
+
+	@Override
+	public List<TaskResponseDto> getAllTasks() {
+		List<Tasks> tasks = taskDao.findAll();
+		return tasks.stream().map(task -> {
+            TaskResponseDto dto = modelMapper.map(task, TaskResponseDto.class);
+            dto.setStaff(task.getStaff().getFullName());
+            return dto;
+        }).collect(Collectors.toList());	
+	}
+
+	@Override
+	public List<GetTasksbyIdResponseDto> getTasksByAssignedUser(User user) {
+	    List<Tasks> tasks = taskDao.findByAssignedTo(user);
+	    return tasks.stream()
+	            .map(task -> new GetTasksbyIdResponseDto(task.getDescription(), task.getStatus()))
+	            .collect(Collectors.toList());
+	}
+
+
+
+	
+//	@Override
+//	public List<TaskResponseDto> getTaskbyId(Long staffId) {
+//		List<Tasks> tasks = taskDao.findByAssignedTo_Id(staffId);
+//        return tasks.stream()
+//                    .map(task -> modelMapper.map(task, TaskResponseDto.class))
+//                    .collect(Collectors.toList());
+//	}
+
+	
 	}
 

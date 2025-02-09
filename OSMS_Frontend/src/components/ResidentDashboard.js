@@ -1,9 +1,8 @@
 import React from "react";
+import { Outlet } from "react-router-dom";
 import "../styles.css";
 import CommonNavbar from "./CommonNavbar";
 import ResidentSidebar from "./ResidentSidebar";
-import { Outlet } from "react-router-dom";
-
 const ResidentDashboard = () => {
   return (
     <>
@@ -22,6 +21,7 @@ const ResidentDashboard = () => {
             <Outlet/>
               
     </div>
+
         </div>
       </div>
     </>

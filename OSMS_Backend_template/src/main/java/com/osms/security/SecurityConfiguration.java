@@ -30,7 +30,7 @@ public class SecurityConfiguration {
 
 				.authorizeHttpRequests(requests -> requests
 						.requestMatchers("/auth/login", "/auth/forgot-password", "/auth/reset-password/{token}",
-								"/resident/register", "/staff/register", "/v*/api-doc*/**", "/swagger-ui/**")
+								"/resident/register", "/staff/register", "/v*/api-doc*/**", "/swagger-ui/**","/api/payment/**")
 						.permitAll().requestMatchers(HttpMethod.OPTIONS).permitAll() // CORS support
 
 						// Admin Endpoints (Accessible only to Admins)

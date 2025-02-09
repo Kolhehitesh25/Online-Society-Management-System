@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,9 +18,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.osms.dtos.ApiResponse;
+import com.osms.dtos.ComplaintDto;
+import com.osms.dtos.ComplaintRespDto;
 import com.osms.dtos.DisplayNotificationDto;
 import com.osms.dtos.FacilityBookingDto;
 import com.osms.dtos.PaymentUpdateRequestDto;
+import com.osms.dtos.ResidentFacilityBookingDto;
 import com.osms.dtos.ResidentPaymentResponseDto;
 import com.osms.dtos.ResidentRegistrationReqDto;
 import com.osms.service.ResidentService;
@@ -27,6 +31,7 @@ import com.osms.service.ResidentService;
 
 @RestController
 @RequestMapping("/resident")
+@CrossOrigin(origins="http://localhost:3000")
 public class ResidentController {
 
 	@Autowired
@@ -89,6 +94,25 @@ public class ResidentController {
 	    return ResponseEntity.ok(residentService.bookFacility(bookingDto, residentId));
 	}
 
+	 @PostMapping("/register-complaint")
+	    public ResponseEntity<ApiResponse> registerComplaint(
+	            @RequestParam Long residentId,
+	            @RequestBody ComplaintDto complaintDto) {
+	        //ComplaintDto complaint = residentService.registerComplaint(residentId, complaintDto);
+		 return ResponseEntity.ok(residentService.registerComplaint(residentId,complaintDto));
+	    }
+
+	 @GetMapping("/all-complaints/{residentId}")
+	    public ResponseEntity<List<ComplaintRespDto>> getAllComplaintsByResident(@PathVariable Long residentId) {
+	        List<ComplaintRespDto> complaints = residentService.getComplaintsByResident(residentId);
+	        return ResponseEntity.ok(complaints);
+	    }
+	 
+	 @GetMapping("/all-facility-book/{residentId}")
+	    public ResponseEntity<List<ResidentFacilityBookingDto>> getAllFacilityByResident(@PathVariable Long residentId) {
+	        List<ResidentFacilityBookingDto> facility = residentService.getFacilityByResident(residentId);
+	        return ResponseEntity.ok(facility);
+	    }
 
 
 

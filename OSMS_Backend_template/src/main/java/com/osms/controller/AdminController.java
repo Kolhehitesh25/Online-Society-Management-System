@@ -21,6 +21,7 @@ import com.osms.dtos.AdminLoginRequestDto;
 import com.osms.dtos.AdminLoginResponseDto;
 import com.osms.dtos.ApiResponse;
 import com.osms.dtos.AssignTaskDto;
+import com.osms.dtos.ComplaintRespDto;
 import com.osms.dtos.FacilityBookingRespDto;
 import com.osms.dtos.ResidentDTO;
 import com.osms.dtos.ResidentPaymentResponseDto;
@@ -154,12 +155,27 @@ public class AdminController {
 	    }
 	    
 	    
+	    @GetMapping("/all-complaints")
+		public ResponseEntity<List<ComplaintRespDto>> getAllComplaints() {
+		    List<ComplaintRespDto> complaints = adminService.getAllComplaints();
+		    return ResponseEntity.ok(complaints);
+		}
+	    
+	    
+	    @PutMapping("/resolved/{complaintId}")
+	    public ResponseEntity<?> ResolvedComplaint(@PathVariable Long complaintId) {
+	        try {
+	            adminService.resolvedComplaint(complaintId);
+	            return ResponseEntity.ok(new ApiResponse("Complaint resolved successfully"));
+	        } catch (RuntimeException e) {
+	            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(e.getMessage()));
+	        }
+	    }
 	    
 	    
 	    
 	    
 	    
-	    
-	    
+	
 }
 

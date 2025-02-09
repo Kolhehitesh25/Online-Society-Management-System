@@ -11,9 +11,10 @@ import lombok.ToString;
 @Setter
 @ToString
 public class UserUpdateReqDTO {
-//	private Long id;
+	private Long id;
 	private String fullName;
 	private String email;
 	private String mobileNo;
+	private UserRole role;
 
 }

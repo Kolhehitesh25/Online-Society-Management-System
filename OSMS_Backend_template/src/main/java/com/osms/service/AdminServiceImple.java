@@ -13,6 +13,7 @@ import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.osms.dao.ComplaintDao;
 import com.osms.dao.FacilityBookingDao;
 import com.osms.dao.NotificationDao;
 import com.osms.dao.PaymentDao;
@@ -22,11 +23,13 @@ import com.osms.dtos.AdminLoginRequestDto;
 import com.osms.dtos.AdminLoginResponseDto;
 import com.osms.dtos.ApiResponse;
 import com.osms.dtos.AssignTaskDto;
+import com.osms.dtos.ComplaintRespDto;
 import com.osms.dtos.FacilityBookingRespDto;
 import com.osms.dtos.ResidentDTO;
 import com.osms.dtos.ResidentPaymentResponseDto;
 import com.osms.dtos.SendNotificationDto;
 import com.osms.dtos.StaffDTO;
+import com.osms.pojos.Complaint;
 import com.osms.pojos.FacilityBooking;
 import com.osms.pojos.Notification;
 import com.osms.pojos.Payment;
@@ -52,6 +55,9 @@ public class AdminServiceImple implements AdminService {
 
 	@Autowired
 	private FacilityBookingDao facilityBookingDao;
+	
+	@Autowired
+	private ComplaintDao complaintDao;
 
 	@Autowired
 	private ModelMapper modelMapper;
@@ -61,7 +67,7 @@ public class AdminServiceImple implements AdminService {
 
 		Notification transientNotification = modelMapper.map(sendNotificationDto, Notification.class);
 		Notification persistenNotification = notificationDao.save(transientNotification);
-		return new ApiResponse("Added new category with Id" + persistenNotification.getId());
+		return new ApiResponse("Added new notification with Id" + persistenNotification.getId());
 	}
 
 	@Override
@@ -276,5 +282,29 @@ public class AdminServiceImple implements AdminService {
 	    return stats;
 	}
 
+	@Override
+	public List<ComplaintRespDto> getAllComplaints() {
+		return complaintDao.findAllComplaints();
+	}
+
+	@Override
+	public ApiResponse resolvedComplaint(Long complaintId) {
+		Optional<Complaint> optionalComplaint = complaintDao.findById(complaintId);
+
+		if (optionalComplaint.isPresent()) {
+			Complaint complaint = optionalComplaint.get();
+
+			if ("Pending".equals(complaint.getStatus())) {
+				complaint.setStatus("Resolved");
+				complaintDao.save(complaint);
+				return new ApiResponse("Complaint Resolved successfully.");
+			} else {
+				return new ApiResponse("Complaint is already Resolved or cancelled.");
+			}
+		} else {
+			return new ApiResponse("Complaint not found.");
+		}
+	}
+	
 
 }

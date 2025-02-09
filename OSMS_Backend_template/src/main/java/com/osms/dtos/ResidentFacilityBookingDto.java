@@ -11,13 +11,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class FacilityBookingRespDto {
-
+public class ResidentFacilityBookingDto {
 	private Long id;
 	private String facilityName;
     private LocalDate fromDateTime;
     private LocalDate toDateTime;
     private String status;
-    private String fullName;  
-    private String email;
+
+
 }

@@ -18,13 +18,19 @@ import AboutPage from "./screen/AboutPage";
 import Residentdata from "./components/UserData/Residentdata";
 import AdminDashboardData from "./components/UserData/AdminDashboardData";
 import StaffData from "./components/UserData/StaffData";
-import AddTask from "./components/AddTask";
-import UpdateProfile from "./components/UpdateProfiles/UpdateProfile";
-import FinancialRecord from "./components/FinancialRecord";
-import FacilityBooking from "./components/FacilityBooking";
+import AddTask from "./components/AdminFunctionality/AddTask";
+
+import FinancialRecord from "./components/AdminFunctionality/FinancialRecord";
+import FacilityBooking from "./components/AdminFunctionality/FacilityBooking";
 import PrivateRoute from "./components/PrivateRoute";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
+import SendNotification from "./components/AdminFunctionality/SendNotification";
+import Complaint from "./components/AdminFunctionality/Complaint";
+import RaiseComplaint from "./components/RaiseComplaint";
+import ResidentDashboardData from "./components/UserData/ResidentDashboardData";
+import BookFacility from "./components/BookFacility";
+import ViewNotification from "./components/ViewNotification";
 import PayBill from "./components/PayBill"; // ✅ Import PayBill
 
 function App() {
@@ -38,7 +44,6 @@ function App() {
 
         <Route path="/register/staff" element={<StaffRegister />} />
         <Route path="/register/resident" element={<ResidentRegister />} />
-        <Route path="/update-profile" element={<UpdateProfile />} />
 
         <Route path="/login" element={<Login />} />
 
@@ -51,6 +56,9 @@ function App() {
             <Route path="add-task" element={<AddTask />} />
             <Route path="financial-record" element={<FinancialRecord />} />
             <Route path="facility-booking" element={<FacilityBooking />} />
+
+            <Route path="send-notification" element={<SendNotification/>}/>
+            <Route path="complaints" element={<Complaint/>}/>
           </Route>
         </Route>
 
@@ -60,6 +68,15 @@ function App() {
           <Route path="/staff" element={<StaffDashboard />} />
         </Route>
 
+
+        <Route element={<PrivateRoute allowedRoles={["RESIDENT"]} />}>
+        <Route path="/resident" element={<ResidentDashboard/>} >
+          <Route index element={<ResidentDashboardData/>} />
+
+          <Route path="complaints" element={<RaiseComplaint/>} />
+           
+          <Route path="book-facility" element={<BookFacility/>} />
+          <Route path="notification" element={<ViewNotification/>} />
         <Route element={<PrivateRoute allowedRoles={["RESIDENT"]} />}>
           <Route path="/resident" element={<ResidentDashboard />}>
             <Route path="pay-bill" element={<PayBill />} />{" "}

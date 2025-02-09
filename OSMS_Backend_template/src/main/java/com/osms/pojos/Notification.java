@@ -2,6 +2,7 @@ package com.osms.pojos;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,7 +25,7 @@ public class Notification extends BaseEntity{
 	@Column(name="message",nullable = false,length=1000)
     private String message;
     
-    private LocalDate sentDateTime=LocalDate.now(); // Timestamp of notification
+    private LocalDateTime sentDateTime=LocalDateTime.now(); // Timestamp of notification
 
     private boolean sentToAllResidents = true; // Always true
 }

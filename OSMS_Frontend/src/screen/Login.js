@@ -1,34 +1,54 @@
+
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import loginbg from "../images/loginback.avif";
+import AuthService from "../services/AuthService";
+import axios from "axios";
+import { toast } from "react-toastify";
+
+import { Eye, EyeSlash } from "react-bootstrap-icons"; 
+
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("admin");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (email && password && role) {
-      if (role === "admin") {
-        navigate("/admin");
-      } else if (role === "staff") {
-        navigate("/staff");
-      } else if (role === "resident") {
-        navigate("/resident");
+
+    if (email && password) {
+      try {
+        const { token, user } = await AuthService.login(email, password);
+
+        if (token) {
+          axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+          localStorage.setItem("token", token);
+          localStorage.setItem("role", user.role); 
+        }
+      
+        if (user.role === "ADMIN") {
+          navigate("/admin");
+          toast.success(`Successfully logged in as ${user.fullName}`);
+        } else if (user.role === "CLEANER" || user.role === "SECURITY") {
+          navigate("/staff");
+          toast.success(`Successfully logged in as ${user.fullName}`);
+        } else if (user.role === "RESIDENT") {
+          navigate("/resident");
+          toast.success(`Successfully logged in as ${user.fullName}`);
+        } else {
+          toast.error("Unknown role, contact support!");
+        }
+        
+      } catch (error) {
+        toast.error("Invalid email or password");
       }
     } else {
-      alert("Please fill all fields");
-    }
-  };
-
-  const handleRegisterRedirect = () => {
-    if (role === "staff") {
-      navigate("/register/staff");
-    } else if (role === "resident") {
-      navigate("/register/resident");
+      toast.error("Please fill in both email and password");
     }
   };
 
@@ -53,6 +73,9 @@ const Login = () => {
         }}
       >
         <h2 className="text-center mb-4">Login</h2>
+        {errorMessage && (
+          <div className="alert alert-danger">{errorMessage}</div>
+        )}
         <form onSubmit={handleLogin}>
           <div className="mb-3">
             <label htmlFor="email" className="form-label">
@@ -69,36 +92,27 @@ const Login = () => {
             />
           </div>
 
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label">
-              Password:
-            </label>
-            <input
-              type="password"
-              className="form-control"
-              id="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="role" className="form-label">
-              Role:
-            </label>
-            <select
-              id="role"
-              className="form-select"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-            >
-              <option value="admin">Admin</option>
-              <option value="staff">Staff</option>
-              <option value="resident">Resident</option>
-            </select>
-          </div>
+          <div className="mb-3 position-relative">
+      <label htmlFor="password" className="form-label">Password:</label>
+      <div className="input-group">
+        <input
+          type={showPassword ? "text" : "password"}
+          className="form-control"
+          id="password"
+          placeholder="Enter your password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <span
+          className="input-group-text"
+          style={{ cursor: "pointer" }}
+          onClick={() => setShowPassword(!showPassword)}
+        >
+          {showPassword ? <EyeSlash /> : <Eye />}
+        </span>
+      </div>
+    </div>
 
           <div className="text-center mt-3">
             <button
@@ -121,32 +135,49 @@ const Login = () => {
               }
               onMouseLeave={(e) =>
                 (e.target.style.background =
-                  "linear-gradient(135deg, #00b4db, #0083b0)")
+                  "linear-gradient(135deg,rgb(93, 156, 171), #0083b0)")
               }
             >
               Login
             </button>
           </div>
         </form>
+        <p className="text-center mt-3">
+  Don't have an account?
+  <div className="dropdown d-inline">
+    <button
+      className="btn btn-link dropdown-toggle mb-1"
+      type="button"
+      id="registerDropdown"
+      data-bs-toggle="dropdown"
+      aria-expanded="false"
+      style={{ textDecoration: "underline", color: "blue", border: "none" }}
+    >
+      Register here
+    </button>
+    <ul className="dropdown-menu custom-dropdown" aria-labelledby="registerDropdown">
+      <li>
+        <Link className="dropdown-item custom-dropdown-item" to="/register/resident">
+          Register as Resident
+        </Link>
+      </li>
+      <li>
+        <Link className="dropdown-item custom-dropdown-item" to="/register/staff">
+          Register as Staff
+        </Link>
+      </li>
+    </ul>
+  </div>
+</p>
 
         <p className="text-center mt-3">
-          Don't have an account?{" "}
-          <Link
-            to="#"
-            onClick={(e) => {
-              e.preventDefault();
-              handleRegisterRedirect();
-            }}
-          >
-            Register here
-          </Link>
-        </p>
-        <p className="text-center mt-3">
-          <a href="/forgot-password">Forgot your password?</a>
+          <Link to="/forgot-password">Forgot your password?</Link>
         </p>
       </div>
     </div>
   );
 };
+
+
 
 export default Login;

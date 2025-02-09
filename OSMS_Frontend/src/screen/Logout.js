@@ -1,18 +1,24 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 const Logout = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Clear user session (if stored in localStorage or sessionStorage)
-    localStorage.removeItem("user");
-    sessionStorage.removeItem("user");
+    console.log('Logging out...');
 
-    // Redirect to login page after 2 seconds
+  
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("user");
+    
+
+   
+
+    // Redirect to login after 2 seconds
     setTimeout(() => {
-      navigate("/login");
+      console.log("Navigating to login...");
+      navigate("/home");
     }, 2000);
   }, [navigate]);
 

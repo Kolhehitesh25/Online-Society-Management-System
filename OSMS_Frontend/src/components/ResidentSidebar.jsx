@@ -5,12 +5,14 @@ import {
   FaHome,
   FaWallet,
   FaCalendarAlt,
-  FaFlag,
+  FaCommentDots,
   FaBell,
+  FaBellSlash,
 } from "react-icons/fa";
-import { Link } from "react-router-dom";
-
+import { Link, useLoaderData, useLocation } from "react-router-dom";
+import { Bell } from "lucide-react";
 const ResidentSideBar = () => {
+  const location = useLocation();
   return (
     <div className="d-flex ">
       {/* Sidebar */}
@@ -32,29 +34,61 @@ const ResidentSideBar = () => {
             textDecoration: "underline",
           }}
         >
-       Resident
+          Resident
         </h2>
         <Nav className="flex-column">
-          <Nav.Link as={Link} to='/resident' className="text-light">
+          <Nav.Link
+            as={Link}
+            to="/resident"
+            className={
+              location.pathname === "/resident" ? "text-warning" : "text-light"
+            }
+          >
             <FaHome className="me-2" /> Dashboard
           </Nav.Link>
           <hr />
 
-          <Nav.Link  className="text-light pb-3">
-            <FaWallet  className="me-2" /> Pay Mantainance
+          <Nav.Link className="text-light pb-3">
+            <FaWallet className="me-2" /> Pay Mantainance
           </Nav.Link>
 
-          <Nav.Link  className="text-light pb-3">
-            <FaCalendarAlt className="me-2" /> Book Facility          </Nav.Link>
-          <Nav.Link  className="text-light pb-3">
-            <FaFlag className="me-2" /> Raise complaint
+          <Nav.Link
+            as={Link}
+            to="/resident/book-facility"
+            className={
+              location.pathname === "/resident/book-facility"
+                ? "text-warning"
+                : "text-light"
+            }
+          >
+            <FaCalendarAlt className="me-2" /> Book Facility
           </Nav.Link>
 
-          <Nav.Link  className="text-light v">
-            <FaBell className="me-2" /> View Notification
+          <Nav.Link
+            as={Link}
+            to="/resident/complaints"
+            className={
+              location.pathname === "/resident/complaints"
+                ? "text-warning"
+                : "text-light"
+            }
+          >
+            <FaCommentDots className="me-2" /> Complaints
           </Nav.Link>
-        
-          
+          <Nav.Link
+            as={Link}
+            to="/resident/notification"
+            className={
+              location.pathname === "/resident/notifications"
+                ? "text-warning"
+                : "text-light"
+            }
+          >
+            <FaBellSlash className="me-2" /> View Notification
+
+<Bell color="red" size={24} repeatCount={4} />
+
+          </Nav.Link>
         </Nav>
       </div>
     </div>

@@ -1,44 +1,88 @@
-
-
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-
+import "./styles.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/ReactToastify.css";
 import Login from "./screen/Login";
-
 import AdminDashboard from "./components/AdminDashboard";
 import StaffDashboard from "./components/StaffDashboard";
 import ResidentDashboard from "./components/ResidentDashboard";
-import "./styles.css";
-import ManagerDashboard from "./components/AdminDashboard";
 
 import HomePage from "./screen/HomePage";
 import StaffRegister from "./screen/StaffRegister";
 import ResidentRegister from "./screen/ResidentRegister";
 import Logout from "./screen/Logout";
 import AboutPage from "./screen/AboutPage";
+import Residentdata from "./components/UserData/Residentdata";
+import AdminDashboardData from "./components/UserData/AdminDashboardData";
+import StaffData from "./components/UserData/StaffData";
+import AddTask from "./components/AdminFunctionality/AddTask";
+
+import FinancialRecord from "./components/AdminFunctionality/FinancialRecord";
+import FacilityBooking from "./components/AdminFunctionality/FacilityBooking";
+import PrivateRoute from "./components/PrivateRoute";
+import ForgotPassword from "./components/ForgotPassword";
+import ResetPassword from "./components/ResetPassword";
+import SendNotification from "./components/AdminFunctionality/SendNotification";
+import Complaint from "./components/AdminFunctionality/Complaint";
+import RaiseComplaint from "./components/RaiseComplaint";
+import ResidentDashboardData from "./components/UserData/ResidentDashboardData";
+import BookFacility from "./components/BookFacility";
+import ViewNotification from "./components/ViewNotification";
 
 function App() {
   return (
     <div className="App">
-    
-
-    
+      <ToastContainer position="top-center" autoClose={1500} />
       <Routes>
-      
-        <Route path="/" element={<HomePage/>} />
-        <Route path="/home" element={<HomePage/>} />
-        <Route path="/login" element={<Login/>} />
-        <Route path="/about" element={<AboutPage/>} />
-       
+        <Route path="/" element={<HomePage />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/about" element={<AboutPage />} />
+
         <Route path="/register/staff" element={<StaffRegister />} />
         <Route path="/register/resident" element={<ResidentRegister />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/manager" element={<ManagerDashboard />} />
-        <Route path="/staff" element={<StaffDashboard />} />
-        <Route path="/resident" element={<ResidentDashboard />} />
-      <Route path="/logout" element={<Logout/>} />
+
+        <Route path="/login" element={<Login />} />
+
+        {/* i used child route inside parent */}
+        {/* protected route kept here */}
+        <Route element={<PrivateRoute allowedRoles={["ADMIN"]} />}>
+          <Route path="/admin" element={<AdminDashboard />}>
+            <Route index element={<AdminDashboardData />} />
+            <Route path="residents" element={<Residentdata />} />
+            <Route path="staffs" element={<StaffData />} />
+            <Route path="add-task" element={<AddTask />} />
+            <Route path="financial-record" element={<FinancialRecord />} />
+            <Route path="facility-booking" element={<FacilityBooking />} />
+
+            <Route path="send-notification" element={<SendNotification/>}/>
+            <Route path="complaints" element={<Complaint/>}/>
+          </Route>
+        </Route>
+
+        <Route
+          element={<PrivateRoute allowedRoles={["SECURITY", "CLEANER"]} />}
+        >
+          <Route path="/staff" element={<StaffDashboard />} />
+        </Route>
+
+
+        <Route element={<PrivateRoute allowedRoles={["RESIDENT"]} />}>
+        <Route path="/resident" element={<ResidentDashboard/>} >
+          <Route index element={<ResidentDashboardData/>} />
+
+          <Route path="complaints" element={<RaiseComplaint/>} />
+           
+          <Route path="book-facility" element={<BookFacility/>} />
+          <Route path="notification" element={<ViewNotification/>} />
+          </Route>
+        </Route>
+
+        <Route path="/logout" element={<Logout />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>
     </div>
   );

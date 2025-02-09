@@ -1,18 +1,22 @@
-import React from "react";
+import React ,{useState} from "react";
 
 import { Nav } from "react-bootstrap";
 import {
   FaHome,
   FaBellSlash,
   FaUser,
-  FaMoneyBill,
   FaCommentDots,
-  FaCalendarCheck,
   FaTasks,
+  FaWallet,
+  FaCalendarAlt,
 } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+
 
 const AdminSideBar = () => {
+  const location = useLocation();
+  
+
   return (
     <div className="d-flex ">
       {/* Sidebar */}
@@ -34,42 +38,98 @@ const AdminSideBar = () => {
             textDecoration: "underline",
           }}
         >
-          {" "}
-          Admin{" "}
+          Admin
         </h2>
         <Nav className="flex-column">
-          <Nav.Link as={Link} to='/admin' className="text-light">
+          <Nav.Link
+            as={Link}
+            to="/admin"
+            replace={false}
+            className={
+              location.pathname === "/admin" ? "text-warning" : "text-light"
+            }
+          >
             <FaHome className="me-2" /> Dashboard
           </Nav.Link>
           <hr />
 
-          <Nav.Link  className="text-light pb-3">
+          <Nav.Link
+            as={Link}
+            to="/admin/residents"
+            replace={false}
+            className={
+              location.pathname === "/admin/residents"
+                ? "text-warning"
+                : "text-light"
+            }
+          >
             <FaUser className="me-2" /> Resident
           </Nav.Link>
 
-          <Nav.Link  className="text-light pb-3">
-            <FaUser className="me-2" /> staff
+          <Nav.Link
+            as={Link}
+            to="/admin/staffs"
+            replace={false}
+            className={
+              location.pathname === "/admin/staffs"
+                ? "text-warning"
+                : "text-light"
+            }
+          >
+            <FaUser className="me-2" /> Staff
           </Nav.Link>
-          <Nav.Link  className="text-light pb-3">
+
+
+          <Nav.Link  as ={Link} to="/admin/add-task" className={
+              location.pathname === "/admin/add-task"
+                ? "text-warning"
+                : "text-light"
+            }>
             <FaTasks className="me-2" /> Add Task
           </Nav.Link>
 
-          <Nav.Link  className="text-light v">
-            <FaMoneyBill className="me-2" /> Finance Record
+          <Nav.Link  as ={Link} to="/admin/financial-record" className={
+              location.pathname === "/admin/financial-record"
+                ? "text-warning"
+                : "text-light"
+            }>
+            <FaWallet className="me-2" /> Financial Record
           </Nav.Link>
-          <Nav.Link  className="text-light pb-3">
+
+          <Nav.Link  as={Link} to="/admin/complaints" className={
+            location.pathname === "/admin/complaints"
+            ? "text-warning"
+            : "text-light"
+            
+          }>
             <FaCommentDots className="me-2" /> Complaints
           </Nav.Link>
 
-          <Nav.Link  className="text-light pb-3">
-            <FaCalendarCheck className="me-2" /> Facility Booking
+          <Nav.Link  as ={Link} to="/admin/facility-booking" className={
+              location.pathname === "/admin/facility-booking"
+                ? "text-warning"
+                : "text-light"
+            }>
+            <FaCalendarAlt className="me-2" /> Facility Booking
           </Nav.Link>
-          <Nav.Link  className="text-light pb-3">
-            <FaBellSlash className="me-2" />
-            Send Notification{" "}
+         
+          <Nav.Link  as={Link} to="/admin/send-notification"
+          className={
+            location.pathname === "/admin/send-notification"
+              ? "text-warning"
+              : "text-light"
+          }
+          
+       
+            style={{ cursor: "pointer" }}
+          >
+            <FaBellSlash className="me-2" /> Send Notification
           </Nav.Link>
+
         </Nav>
+
       </div>
+    
     </div>
   );
 };

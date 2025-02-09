@@ -1,19 +1,37 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const PayBill = () => {
+const PayBill = ({ userId }) => {
   const [amount, setAmount] = useState(1500);
   const [isPaid, setIsPaid] = useState(false);
   const [message, setMessage] = useState("");
 
-  // Load payment status from localStorage when the component mounts
+  // Fetch payment status from the backend when the component mounts
   useEffect(() => {
-    const paidStatus = localStorage.getItem("paymentStatus");
-    if (paidStatus === "true") {
-      setIsPaid(true);
-      setMessage("✅ Payment Successful! Your bill has been paid.");
-    }
-  }, []);
+    const fetchPaymentStatus = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.log("token is invaid");
+      }
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          `http://localhost:8080/api/payment/status/${userId}`
+        );
+
+        if (response.data.status === "paid") {
+          setIsPaid(true);
+          setMessage("✅ Payment Successful! Your bill has been paid.");
+        } else {
+          setIsPaid(false);
+        }
+      } catch (error) {
+        console.error("Error fetching payment status:", error);
+      }
+    };
+
+    fetchPaymentStatus();
+  }, [userId]); // Run when userId changes
 
   const handlePayment = async () => {
     console.log("Payment Started");
@@ -35,15 +53,21 @@ const PayBill = () => {
         name: "Society Management",
         description: "Pay Society Maintenance",
         order_id: order.id,
-        handler: function (response) {
+        handler: async function (response) {
           console.log("Payment Successful:", response);
           setMessage(
             "✅ Payment Successful! Payment ID: " + response.razorpay_payment_id
           );
           setIsPaid(true);
 
-          // Save payment status in localStorage
-          localStorage.setItem("paymentStatus", "true");
+          // Update the payment status in the backend
+          try {
+            await axios.post(
+              `http://localhost:8080/api/payment/update-status/${userId}`
+            );
+          } catch (error) {
+            console.error("Error updating payment status:", error);
+          }
         },
         prefill: {
           name: "Resident",
@@ -66,7 +90,9 @@ const PayBill = () => {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white shadow-lg rounded-lg p-6 w-96 text-center">
-        <h2 className="text-2xl font-semibold text-black mb-4">Pay Maintenance</h2>
+        <h2 className="text-2xl font-semibold text-black mb-4">
+          Pay Maintenance
+        </h2>
         <p className="text-lg text-black">
           Amount: <span className="font-bold">₹{amount}</span>
         </p>

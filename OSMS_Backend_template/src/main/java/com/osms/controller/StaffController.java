@@ -74,7 +74,7 @@ public class StaffController {
         List<TaskResponseDto> tasks = staffService.getAllTasks();
         return ResponseEntity.ok(tasks);
     }	
-	
+
 	
 	 @GetMapping("/assigned/{userId}")
 	    public List<GetTasksbyIdResponseDto> getTasksByUser(@PathVariable Long userId) {

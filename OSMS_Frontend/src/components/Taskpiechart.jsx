@@ -1,4 +1,6 @@
-import React from 'react'
+import React, { useState,useEffect } from 'react'
+import axios from 'axios';
+
 import { Pie } from "react-chartjs-2";
 
 import {
@@ -11,6 +13,7 @@ import {
   Legend,
   ArcElement,
 } from "chart.js";
+import { toast } from 'react-toastify';
 
 // Register required Chart.js components
 Chart.register(
@@ -25,14 +28,42 @@ Chart.register(
 
 const Taskpiechart = () => {
     
+  const[pendingTasks, setPendingTasks]=useState(0);
+  const[completedTasks,setCompletedTasks] = useState(0);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No authentication token found");
+        return;
+      }
+      try {
+        const response = await axios.get("http://localhost:8080/admin/dashboard-stats", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+  
+     
+        const { completedTasks, pendingTasks} = response.data;
+       setPendingTasks(pendingTasks);
+       setCompletedTasks(completedTasks);
+      } catch (error) {
+        console.error("Error fetching stats:", error);  
+        toast.error("Failed to fetch stats.");
+      }
+    };
+  
+    fetchStats();
+  }, []);
+  
 
   const taskData = {
     labels: ["Completed Tasks", "Pending Tasks"],
     datasets: [
       {
-        data: [80, 20], // Replace with dynamic values (e.g., completed: 80, pending: 20)
-        backgroundColor: ["#28a745", "#dc3545"], // Green for completed, Red for pending
-        hoverBackgroundColor: ["#1e7e34", "#c82333"], // Darker shades on hover
+        data: [completedTasks, pendingTasks], 
+        backgroundColor: ["#28a745", "#dc3545"], 
+        hoverBackgroundColor: ["#1e7e34", "#c82333"], 
       },
     ],
     

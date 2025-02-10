@@ -2,10 +2,13 @@ import React from "react";
 
 import { Nav } from "react-bootstrap";
 import { FaHome, FaSignInAlt, FaTasks } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+
 
 const StaffsideBar = () => {
+  const location=useLocation();
   return (
+
     <div className="d-flex ">
       {/* Sidebar */}
       <div
@@ -29,18 +32,25 @@ const StaffsideBar = () => {
           Staff
         </h2>
         <Nav className="flex-column">
-          <Nav.Link as={Link} to="/staff" className="text-light">
-            <FaHome className="me-2" /> Dashboard
-          </Nav.Link>
+        <Nav.Link  as ={Link} to="/staff" className={
+                       location.pathname === "/staff"
+                         ? "text-warning"
+                         : "text-light"
+                     }>
+                     <FaHome className="me-2" />Dashboard
+                   </Nav.Link>
           <hr />
 
-          <Nav.Link className="text-light pb-3">
-            <FaTasks className="me-2" /> view Task
-          </Nav.Link>
-
-          <Nav.Link className="text-light pb-3">
-            <FaSignInAlt className="me-2" /> Entry /Exit logs
-          </Nav.Link>
+          <Nav.Link  as ={Link} to="/staff/view-task" className={
+                       location.pathname === "/staff/view-task"
+                         ? "text-warning"
+                         : "text-light"
+                     }>
+                     <FaTasks className="me-2" /> View Tasks 
+                   </Nav.Link>
+         
+                  
+          
         </Nav>
       </div>
     </div>

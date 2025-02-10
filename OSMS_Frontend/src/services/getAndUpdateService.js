@@ -1,10 +1,10 @@
 import axios from "axios";
 
 // Get user details by ID
-export const getUserById = async (userId, token) => {
+export const getUserById = async (id, token) => {
   try {
     const response = await axios.get(
-      `http://localhost:8080/auth/getall/${userId}`,
+      `http://localhost:8080/auth/getall/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }

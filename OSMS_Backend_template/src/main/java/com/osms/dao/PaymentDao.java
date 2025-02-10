@@ -11,16 +11,18 @@ import org.springframework.transaction.annotation.Transactional;
 import com.osms.pojos.Payment;
 import com.osms.pojos.User;
 
-
 public interface PaymentDao extends JpaRepository<Payment, Long> {
 
-	 Optional<Payment> findByResident(User resident);  
-	 
-	 @Query("SELECT p FROM Payment p WHERE p.resident.id = :residentId")
-	    Payment findByResidentId(@Param("residentId") Long residentId);
+    // Method to find a payment by resident (User )
+    Optional<Payment> findByResident(User resident);  
 
-	    @Modifying
-	    @Transactional
-	    @Query("UPDATE Payment p SET p.status = 'PAID' WHERE p.resident.id = :residentId")
-	    int updatePaymentStatus(@Param("residentId") Long residentId);
+    // Method to find a payment by resident ID
+    @Query("SELECT p FROM Payment p WHERE p.resident.id = :residentId")
+    Optional<Payment> findByResidentId(@Param("residentId") Long residentId);
+
+    // Update payment status to PAID
+    @Modifying
+    @Transactional
+    @Query("UPDATE Payment p SET p.status = 'PAID' WHERE p.resident.id = :residentId")
+    int updatePaymentStatus(@Param("residentId") Long residentId);
 }

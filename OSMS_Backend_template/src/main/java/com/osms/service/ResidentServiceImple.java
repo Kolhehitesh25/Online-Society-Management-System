@@ -27,6 +27,7 @@ import com.osms.service.ResidentService;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -124,18 +125,22 @@ public class ResidentServiceImple implements ResidentService {
 
 	@Override
 	public ApiResponse updatePaymentStatus(PaymentUpdateRequestDto requestDto) {
-		Long residentId = requestDto.getResidentId();
-        Payment payment = paymentDao.findByResidentId(residentId);
+	    Long residentId = requestDto.getResidentId();
+	    
+	    // Fetch the payment using Optional
+	    Optional<Payment> optionalPayment = paymentDao.findByResidentId(residentId);
 
-        if (payment == null) {
-            return new ApiResponse("Payment record not found for resident ID: " + residentId);
-        }
+	    // Check if the payment exists
+	    if (optionalPayment.isPresent()) {
+	        Payment payment = optionalPayment.get(); // Retrieve the Payment object
+	        payment.setStatus("PAID"); 
+	        paymentDao.save(payment); 
 
-        payment.setStatus("PAID"); 
-        paymentDao.save(payment); 
-
-        return new ApiResponse("Payment status updated successfully for Resident ID: " + residentId);
-    }
+	        return new ApiResponse("Payment status updated successfully for Resident ID: " + residentId);
+	    } else {
+	        return new ApiResponse("Payment record not found for resident ID: " + residentId);
+	    }
+	}
 
 
 

@@ -168,14 +168,16 @@ const BookFacility = () => {
                     <td>{new Date(booking.fromDateTime).toLocaleDateString()}</td>
                     <td>{new Date(booking.toDateTime).toLocaleDateString()}</td>
                     <td><Button
-                                          variant={booking.status === "Approved" ? "success" : "warning"}
+                                          variant={ booking.status === "Approved" ? "success" : 
+                                            booking.status === "Requested" ? "warning" : 
+                                            booking.status === "Rejected" ? "danger" : "default"}
                                           size="sm"
-                                        >
+                                        > 
                                           {booking.status}
                                         </Button></td>
                   </tr>
                 ))
-              ) : (
+              ) : (  
                 <tr>
                   <td colSpan="4" className="text-center text-muted">
                     No bookings found

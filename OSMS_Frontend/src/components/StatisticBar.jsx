@@ -14,7 +14,7 @@ import {
 } from "chart.js";
 import { toast } from 'react-toastify';
 
-// Register required Chart.js components
+
 Chart.register(
   BarElement,
   CategoryScale,

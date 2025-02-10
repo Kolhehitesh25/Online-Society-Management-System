@@ -33,7 +33,7 @@ const CommonNavbar = () => {
         ...userData, 
         id: storedUser.userId,  // Make sure ID is not missing
         role: storedUser.role ,
-        flatNumber:storedUser.flatNumber
+       // flatNumber:storedUser.flatNumber
       };
   
       setUser(userWithRole);

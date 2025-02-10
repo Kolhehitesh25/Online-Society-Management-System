@@ -32,6 +32,9 @@ import ResidentDashboardData from "./components/UserData/ResidentDashboardData";
 import BookFacility from "./components/BookFacility";
 import ViewNotification from "./components/ViewNotification";
 import PayBill from "./components/PayBill"; // ✅ Import PayBill
+import StaffDashboardData from "./components/UserData/StaffDashboardData";
+import ViewTask from "./components/ViewTask";
+import EntryExit from "./components/EntryExit";
 
 function App() {
   return (
@@ -41,13 +44,10 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
-
         <Route path="/register/staff" element={<StaffRegister />} />
         <Route path="/register/resident" element={<ResidentRegister />} />
-
         <Route path="/login" element={<Login />} />
-
-        {/* Protected Routes */}
+        {/* Protected Routes for ADMIN */}
         <Route element={<PrivateRoute allowedRoles={["ADMIN"]} />}>
           <Route path="/admin" element={<AdminDashboard />}>
             <Route index element={<AdminDashboardData />} />
@@ -56,37 +56,35 @@ function App() {
             <Route path="add-task" element={<AddTask />} />
             <Route path="financial-record" element={<FinancialRecord />} />
             <Route path="facility-booking" element={<FacilityBooking />} />
-
-            <Route path="send-notification" element={<SendNotification/>}/>
-            <Route path="complaints" element={<Complaint/>}/>
+            <Route path="send-notification" element={<SendNotification />} />
+            <Route path="complaints" element={<Complaint />} />
           </Route>
         </Route>
-
+        {/* Protected Routes for STAFF (SECURITY & CLEANER) */}
         <Route
           element={<PrivateRoute allowedRoles={["SECURITY", "CLEANER"]} />}
         >
-          <Route path="/staff" element={<StaffDashboard />} />
-        </Route>
-
-
-        <Route element={<PrivateRoute allowedRoles={["RESIDENT"]} />}>
-        <Route path="/resident" element={<ResidentDashboard/>} >
-          <Route index element={<ResidentDashboardData/>} />
-
-          <Route path="complaints" element={<RaiseComplaint/>} />
-           
-          <Route path="book-facility" element={<BookFacility/>} />
-          <Route path="notification" element={<ViewNotification/>} />
-        <Route element={<PrivateRoute allowedRoles={["RESIDENT"]} />}>
-          <Route path="/resident" element={<ResidentDashboard />}>
-            <Route path="pay-bill" element={<PayBill />} />{" "}
-            {/* ✅ Added PayBill route */}
+          <Route path="/staff" element={<StaffDashboard />}>
+            <Route index element={<StaffDashboardData />} />
+            <Route path="view-task" element={<ViewTask />} />
           </Route>
         </Route>
-
+        {/* Protected Routes for RESIDENT */}
+        <Route element={<PrivateRoute allowedRoles={["RESIDENT"]} />}>
+          <Route path="/resident" element={<ResidentDashboard />}>
+            <Route index element={<ResidentDashboardData />} />
+            <Route path="complaints" element={<RaiseComplaint />} />
+            <Route path="book-facility" element={<BookFacility />} />
+            <Route path="notification" element={<ViewNotification />} />
+            <Route path="pay-bill" element={<PayBill />} />{" "}
+           
+          </Route>
+        </Route>
+        {/* Other Routes */}
         <Route path="/logout" element={<Logout />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />{" "}
+      
       </Routes>
     </div>
   );

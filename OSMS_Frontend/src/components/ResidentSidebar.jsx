@@ -5,7 +5,7 @@ import {
   FaWallet,
   FaCalendarAlt,
   FaCommentDots,
-  FaBell,
+  
   FaBellSlash,
 } from "react-icons/fa";
 import { Link, useLoaderData, useLocation } from "react-router-dom";
@@ -86,14 +86,15 @@ const ResidentSideBar = () => {
             }
           >
             <FaBellSlash className="me-2" /> View Notification
+            </Nav.Link>
 
-<Bell color="red" size={24} repeatCount={4} />
+{/* <Bell color="red" size={24} repeatCount={4} /> */}
        
           <Nav.Link
             as={Link}
             to="/resident/pay-bill"
             className="text-light pb-3"
-            onClick={handlePaymentClick} // ✅ Added onClick
+            onClick={handlePaymentClick} 
           >
             <FaWallet className="me-2" /> Pay Maintenance
           </Nav.Link>

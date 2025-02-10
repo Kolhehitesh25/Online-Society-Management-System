@@ -1,102 +1,172 @@
-import React, { useState } from "react";
-import { Table, Form, InputGroup, Container, Button, Modal } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Table, Container, Card, Spinner, Form, InputGroup, Button, Modal } from "react-bootstrap";
+import PaginationComponent from "../Pagination";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const AddTask = () => {
+const StaffData = () => {
+  const [staffs, setStaffs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [staffs, setStaffs] = useState([
-    { id: 1, name: "John Doe", phone: "9876543210", email: "john@example.com" },
-    { id: 2, name: "Jane Smith", phone: "8765432109", email: "jane@example.com" },
-    { id: 3, name: "Mark Taylor", phone: "7654321098", email: "mark@example.com" },
-    { id: 4, name: "Lisa Brown", phone: "6543210987", email: "lisa@example.com" },
-  ]);
-  const [tasks, setTasks] = useState([]); // Store tasks here
-
+  const [newTask, setNewTask] = useState({ description: "", dueDate: "" });
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [currentStaff, setCurrentStaff] = useState(null);
-  const [newTask, setNewTask] = useState({ description: "", dueDate: "" });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(8);
 
-  // Function to handle task modal open
+  useEffect(() => {
+    fetchStaffs();
+  }, []);
+
+  const fetchStaffs = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("No authentication token found.");
+      return;
+    }
+  
+    try {
+      const response = await axios.get("http://localhost:8080/admin/all-staffs", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      let assignedStaffs = JSON.parse(localStorage.getItem("assignedStaffs")) || [];
+  
+      const updatedStaffs = response.data.map((staff) => ({
+        ...staff,
+        isAssigned: assignedStaffs.includes(staff.id), // Check if stored in localStorage
+      }));
+  
+      setStaffs(updatedStaffs);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching staff data:", error);
+      toast.error("Failed to fetch staff data.");
+      setLoading(false);
+    }
+  };
+  
+
   const handleAddTask = (staff) => {
     setCurrentStaff(staff);
     setShowTaskModal(true);
   };
-
-  // Function to handle task form submission
-  const handleSaveTask = () => {
-    const newTaskData = { ...newTask, staffId: currentStaff.id };
-    setTasks([...tasks, newTaskData]); // Add the new task to the tasks list
-    setShowTaskModal(false); // Close the modal
-    setNewTask({ description: "", dueDate: "" }); // Reset the task form
+  const handleSaveTask = async () => {
+    if (!newTask.description || !newTask.dueDate) {
+      toast.error("Please fill in all fields before assigning a task.");
+      return;
+    }
+  
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Authentication error. Please log in again.");
+      return;
+    }
+  
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/admin/assign-task?staffId=${currentStaff.id}`,
+        newTask,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      if (response.status === 200) {
+        toast.success("Task Assigned Successfully!");
+  
+        let assignedStaffs = JSON.parse(localStorage.getItem("assignedStaffs")) || [];
+        assignedStaffs.push(currentStaff.id);
+        localStorage.setItem("assignedStaffs", JSON.stringify(assignedStaffs));
+  
+       
+        fetchStaffs();
+      }
+    } catch (error) {
+      console.error("Error assigning task:", error);
+      toast.error("Failed to assign task. Please try again.");
+    }
+  
+    setShowTaskModal(false);
+    setNewTask({ description: "", dueDate: "" });
   };
-
-
-
-  // Filter staff based on search input
-  const filteredStaffs = staffs.filter((staff) =>
-    staff.name.toLowerCase().includes(search.toLowerCase())
-  );
+  
+  
 
   return (
-    <Container className="mt-4" style={{ maxWidth: "2000px", padding: "0", marginLeft: "10px" }}>
-      <h3 className="text-center mb-4" style={{ color: "teal" }}>Staff Details</h3>
+    <Container className="mt-4">
+      <Card className="shadow-lg p-3">
+        <h3 className="text-center mb-3" style={{ color: "teal" }}>Assign Tasks</h3>
+        <InputGroup className="mb-3">
+          <InputGroup.Text>🔍</InputGroup.Text>
+          <Form.Control
+            type="text"
+            placeholder="Search by Name or Email"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </InputGroup>
+        {loading ? (
+          <div className="text-center">
+            <Spinner animation="border" variant="primary" />
+          </div>
+        ) : (
+          <>
+            <Table striped bordered hover responsive className="text-center mt-4">
+              <thead className="bg-dark text-white">
+                <tr>
+                  <th>S.No</th>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+  {staffs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((staff, index) => (
+    <tr key={staff.id}>
+      <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
+      <td>{staff.fullName}</td>
+      <td>{staff.mobileNo}</td>
+      <td>{staff.email}</td>
+      <td>{staff.role}</td>
+      <td>
+      <Button
+  size="md"
+  disabled={staff.isAssigned}
+  onClick={() => handleAddTask(staff)}
+  style={{
+    backgroundColor: staff.isAssigned ? "gray" : "green",
+    cursor: staff.isAssigned ? "not-allowed" : "pointer",
+  }}
+>
+  {staff.isAssigned ? "Assigned" : "Add Task"}
+</Button>
 
-      {/* Search Bar */}
-      <InputGroup className="mb-3">
-        <InputGroup.Text>🔍</InputGroup.Text>
-        <Form.Control
-          type="text"
-          placeholder="Search by Name..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </InputGroup>
+      </td>
+    </tr>
+  ))}
+</tbody>
 
-      {/* Table */}
-      <Table striped bordered hover responsive className="text-center shadow-lg">
-        <thead className="bg-dark text-light">
-          <tr>
-            <th>S.No</th>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Email</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredStaffs.length > 0 ? (
-            filteredStaffs.map((staff, index) => (
-              <tr key={staff.id}>
-                <td>{index + 1}</td>
-                <td>{staff.name}</td>
-                <td>{staff.phone}</td>
-                <td>{staff.email}</td>
-                <td>
-                  <Button
-                    
-                    size="md"
-                    onClick={() => handleAddTask(staff)} // Open the Add Task modal
-                    style={{ marginRight: "10px",backgroundColor:'green' }}
-                  >
-                    Add Task
-                  </Button>
-                 
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="6" className="text-center text-danger">
-                No staff found
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </Table>
+            </Table>
 
-      {/* Add Task Modal */}
+            <PaginationComponent
+              currentPage={currentPage}
+              totalPages={Math.ceil(staffs.length / itemsPerPage)}
+              onPrevious={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              onNext={() => setCurrentPage((prev) => Math.min(prev + 1, Math.ceil(staffs.length / itemsPerPage)))}
+            />
+          </>
+        )}
+      </Card>
       <Modal show={showTaskModal} onHide={() => setShowTaskModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Add Task for {currentStaff?.name}</Modal.Title>
+          <Modal.Title>Add Task for {currentStaff?.fullName}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -125,7 +195,7 @@ const AddTask = () => {
             Close
           </Button>
           <Button variant="info" onClick={handleSaveTask}>
-            Add Task
+            Assign Task
           </Button>
         </Modal.Footer>
       </Modal>
@@ -133,4 +203,4 @@ const AddTask = () => {
   );
 };
 
-export default AddTask;
+export default StaffData;

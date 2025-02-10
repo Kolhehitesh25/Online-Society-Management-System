@@ -1,53 +1,79 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const PayBill = ({ userId }) => {
+const PayBill = () => {
   const [amount, setAmount] = useState(1500);
   const [isPaid, setIsPaid] = useState(false);
   const [message, setMessage] = useState("");
 
-  // Fetch payment status from the backend when the component mounts
-  useEffect(() => {
-    const fetchPaymentStatus = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.log("token is invaid");
-      }
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(
-          `http://localhost:8080/api/payment/status/${userId}`
-        );
+  // Retrieve user information from local storage
+  const user = JSON.parse(localStorage.getItem("user")); // Assuming the user object is stored as a JSON string
+  const userId = user ? user.userId : null; // Extract userId from the user object
+  console.log("User  ID: ", userId); // Log the user ID for debugging
 
-        if (response.data.status === "paid") {
-          setIsPaid(true);
-          setMessage("✅ Payment Successful! Your bill has been paid.");
-        } else {
-          setIsPaid(false);
+  // Function to fetch payment status from the backend
+  const fetchPaymentStatus = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.log("Token is invalid");
+      return;
+    }
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/payment/status/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the token in the headers
+          },
         }
-      } catch (error) {
-        console.error("Error fetching payment status:", error);
+      );
+
+      // Check if the payment status is PAID
+      if (response.data === "PAID") {
+        setIsPaid(true);
+        setMessage("✅ Payment Successful! Your bill has been paid.");
+      } else {
+        setIsPaid(false);
+        setMessage(""); // Clear message if not paid
       }
-    };
+    } catch (error) {
+      console.error("Error fetching payment status:", error);
+      setMessage("❌ Failed to fetch payment status.");
+    }
+  };
 
-    fetchPaymentStatus();
-  }, [userId]); // Run when userId changes
+  // Fetch payment status when the component mounts
+  useEffect(() => {
+    if (userId) {
+      fetchPaymentStatus();
+    } else {
+      setMessage("❌ User ID not found. Please log in.");
+    }
+  }, [userId]);
 
+  // Function to handle payment
   const handlePayment = async () => {
     console.log("Payment Started");
 
+    // Prevent payment if already paid
+    if (isPaid) {
+      setMessage("❌ Payment already completed! You cannot pay again.");
+      return;
+    }
+
     try {
+      // Create an order with Razorpay
       const response = await axios.post(
         "http://localhost:8080/api/payment/create-order",
         null,
         { params: { amount: amount } }
       );
 
-      const order = response.data;
+      const order = response.data; // Use the response directly
       console.log("Order Created: ", order);
 
       const options = {
-        key: "rzp_test_JqXu6d6rg1MSt5",
+        key: "rzp_test_JqXu6d6rg1MSt5", // Replace with your Razorpay key
         amount: order.amount,
         currency: order.currency,
         name: "Society Management",
@@ -62,17 +88,30 @@ const PayBill = ({ userId }) => {
 
           // Update the payment status in the backend
           try {
-            await axios.post(
-              `http://localhost:8080/api/payment/update-status/${userId}`
+            const updateResponse = await axios.post(
+              `http://localhost:8080/api/payment/update-status/${userId}`,
+              null,
+              {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`, // Include the token in the headers
+                },
+              }
             );
+            console.log("Update Response:", updateResponse.data); // Log the response from the update status
+
+            // Optionally, fetch the updated payment status
+            await fetchPaymentStatus();
           } catch (error) {
             console.error("Error updating payment status:", error);
+            setMessage(
+              "❌ Failed to update payment status. Please contact support."
+            );
           }
         },
         prefill: {
-          name: "Resident",
-          email: "resident@example.com",
-          contact: "9876543210",
+          name: user.fullName, // Use the full name from the user object
+          email: user.email, // Use the email from the user object
+          contact: user.mobileNo, // Use the mobile number from the user object
         },
         theme: {
           color: "#2563EB",

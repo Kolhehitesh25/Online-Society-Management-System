@@ -1,6 +1,7 @@
 package com.osms.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,6 +26,8 @@ public interface TaskDao extends JpaRepository<Tasks, Long> {
     List<Tasks> findByAssignedTo(@Param("user") User user);
 
 	long countByStatus(String status);
+
+
 	
 //	@Query("SELECT COUNT(t) FROM Task t WHERE t.status = :status")
 //	long countTasksByStatus(@Param("status") String status);

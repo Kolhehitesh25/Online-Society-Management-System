@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +28,7 @@ import com.osms.service.StaffService;
 
 @RestController
 @RequestMapping("/staff")
+@CrossOrigin(origins="http://localhost:3000")
 public class StaffController {
 
 	@Autowired
@@ -56,7 +58,7 @@ public class StaffController {
     }
 	
 	@PutMapping("/update-tasks/{tasksId}")
-	 public ResponseEntity<?> updatePaymentStatus(@PathVariable Long tasksId){
+	 public ResponseEntity<?> updateTasksStatus(@PathVariable Long tasksId){
 		 try {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(staffService.updateTasksStatus(tasksId));
@@ -72,6 +74,7 @@ public class StaffController {
         List<TaskResponseDto> tasks = staffService.getAllTasks();
         return ResponseEntity.ok(tasks);
     }	
+
 	
 	 @GetMapping("/assigned/{userId}")
 	    public List<GetTasksbyIdResponseDto> getTasksByUser(@PathVariable Long userId) {
@@ -79,4 +82,8 @@ public class StaffController {
 	        user.setId(userId);  
 	        return staffService.getTasksByAssignedUser(user);
 	}
+	 
+	 
+	 
+	 
 }

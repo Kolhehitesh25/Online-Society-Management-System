@@ -18,7 +18,7 @@ public interface AdminService {
 
 	ApiResponse sendNotification(SendNotificationDto sendNotificationDto);
 
-	ApiResponse assignTask(AssignTaskDto assignTaskDTO, Long staffId);
+
 
 	List<ResidentPaymentResponseDto> getAllResidentsWithPayments();
 
@@ -47,6 +47,9 @@ public interface AdminService {
 	List<ComplaintRespDto> getAllComplaints();
 
 	ApiResponse resolvedComplaint(Long complaintId);
+
+	ApiResponse assignTask(Long staffId, AssignTaskDto assignTaskDTO);
+
 
 
 

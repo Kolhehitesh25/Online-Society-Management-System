@@ -15,8 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.osms.dtos.AdminLoginRequestDto;
-import com.osms.dtos.AdminLoginResponseDto;
+
 import com.osms.dtos.ApiResponse;
 import com.osms.dtos.AssignTaskDto;
 import com.osms.dtos.FacilityBookingRespDto;
@@ -103,10 +102,12 @@ public class AdminController {
 	                    .body(new ApiResponse(e.getMessage()));
 	        }
 	    }
-	 @PostMapping("/login")
-	    public ResponseEntity<AdminLoginResponseDto> login(@RequestBody AdminLoginRequestDto loginDto) {
-	        AdminLoginResponseDto response = adminService.loginAdmin(loginDto);
-	        return ResponseEntity.ok(response);
-	    }
+//	 @PostMapping("/login")
+//	    public ResponseEntity<AdminLoginResponseDto> login(@RequestBody AdminLoginRequestDto loginDto) {
+//	        AdminLoginResponseDto response = adminService.loginAdmin(loginDto);
+//	        return ResponseEntity.ok(response);
+//	    }
+	 
+	 
 }
 

@@ -4,6 +4,8 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import Login from "./screen/Login";
 
@@ -32,7 +34,7 @@ function App() {
     <div className="App">
     
 
-    
+    <ToastContainer/>
       <Routes>
       
         <Route path="/" element={<HomePage/>} />

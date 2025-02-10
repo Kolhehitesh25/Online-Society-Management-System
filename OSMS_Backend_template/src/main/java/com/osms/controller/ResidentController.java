@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import com.osms.dtos.ApiResponse;
 import com.osms.dtos.DisplayNotificationDto;
 import com.osms.dtos.FacilityBookingDto;
 import com.osms.dtos.PaymentUpdateRequestDto;
+
 import com.osms.dtos.ResidentPaymentResponseDto;
 import com.osms.dtos.ResidentRegistrationReqDto;
 import com.osms.service.ResidentService;
@@ -82,8 +84,13 @@ public class ResidentController {
     public ResponseEntity<ApiResponse> bookFacility(@RequestBody FacilityBookingDto bookingDto) {
         return ResponseEntity.ok(residentService.bookFacility(bookingDto));
     }
-
-	
+    
+//	 @PostMapping("/login")
+//	    public ResponseEntity<ResidentLoginResponseDto> login(@RequestBody ResidentLoginRequestDto loginDto) {
+//	        ResidentLoginResponseDto response = residentService.loginResident(loginDto);
+//	        return ResponseEntity.ok(response);
+//	    }
+//	
 	
 	
 	

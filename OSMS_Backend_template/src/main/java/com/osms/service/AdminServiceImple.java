@@ -16,8 +16,7 @@ import com.osms.dao.NotificationDao;
 import com.osms.dao.PaymentDao;
 import com.osms.dao.TaskDao;
 import com.osms.dao.UserDao;
-import com.osms.dtos.AdminLoginRequestDto;
-import com.osms.dtos.AdminLoginResponseDto;
+
 import com.osms.dtos.ApiResponse;
 import com.osms.dtos.AssignTaskDto;
 import com.osms.dtos.FacilityBookingRespDto;
@@ -184,18 +183,18 @@ Optional<User> staffOpt = userDao.findById(staffId);
         }
 	}
 
-	@Override
-	public AdminLoginResponseDto loginAdmin(AdminLoginRequestDto loginDto) {
-		
-		 Optional<User> admin = userDao.findByEmailAndPasswordAndRole(
-	                loginDto.getEmail(), loginDto.getPassword(), "Admin");
-
-	        if (admin.isPresent()) {
-	            return new AdminLoginResponseDto("Login Successful!", "dummy-token-123");  // JWT can be added later
-	        } else {
-	            throw new RuntimeException("Invalid credentials or not an admin!");
-	        }
-	}
+//	@Override
+//	public AdminLoginResponseDto loginAdmin(AdminLoginRequestDto loginDto) {
+//		
+//		 Optional<User> admin = userDao.findByEmailAndPasswordAndRole(
+//	                loginDto.getEmail(), loginDto.getPassword(), "Admin");
+//
+//	        if (admin.isPresent()) {
+//	            return new AdminLoginResponseDto("Login Successful!", "dummy-token-123");  // JWT can be added later
+//	        } else {
+//	            throw new RuntimeException("Invalid credentials or not an admin!");
+//	        }
+//	}
 
 	
 		

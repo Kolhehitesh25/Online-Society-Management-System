@@ -2,27 +2,48 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import loginbg from "../images/loginback.avif";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("admin");
+  const [error,setError]=useState("")
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (email && password && role) {
-      if (role === "admin") {
+    setError(""); // Clear previous errors
+
+    try {
+      const response = await axios.post("http://localhost:8080/login/${role}", {
+        email,
+        password,
+        
+      });
+
+      const { token, userRole } = response.data;
+    localStorage.setItem("token", token);
+    localStorage.setItem("role", userRole);
+
+    switch (userRole) {
+      case "admin":
         navigate("/admin");
-      } else if (role === "staff") {
+        break;
+      case "staff":
         navigate("/staff");
-      } else if (role === "resident") {
+        break;
+      case "resident":
         navigate("/resident");
-      }
-    } else {
-      alert("Please fill all fields");
+        break;
+      default:
+        setError("Invalid user role.");
     }
-  };
+  } catch (err) {
+    setError("Invalid credentials. Please try again.");
+  }
+  };
 
   const handleRegisterRedirect = () => {
     if (role === "staff") {

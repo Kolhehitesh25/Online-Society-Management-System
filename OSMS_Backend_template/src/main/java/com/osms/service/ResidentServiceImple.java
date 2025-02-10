@@ -1,10 +1,13 @@
 package com.osms.service;
 
 
+
 import com.osms.dtos.ApiResponse;
 import com.osms.dtos.DisplayNotificationDto;
 import com.osms.dtos.FacilityBookingDto;
 import com.osms.dtos.PaymentUpdateRequestDto;
+
+
 import com.osms.dtos.ResidentPaymentDto;
 import com.osms.dtos.ResidentPaymentResponseDto;
 import com.osms.dtos.ResidentRegistrationReqDto;
@@ -19,9 +22,11 @@ import com.osms.dao.NotificationDao;
 import com.osms.dao.PaymentDao;
 import com.osms.dao.UserDao;
 import com.osms.service.ResidentService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -52,38 +57,45 @@ public class ResidentServiceImple implements ResidentService {
     @Autowired
 	private ModelMapper modelMapper;
 	
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     
 
     @Override
     public ApiResponse registerResident(ResidentRegistrationReqDto registrationDTO) {
-       
-    	User transientResident = modelMapper.map(registrationDTO, User.class);
+        try {
+            // Map DTO to User entity
+            User transientResident = modelMapper.map(registrationDTO, User.class);
 
-        
-        Flat flat = new Flat();
-        flat.setFlatNumber(registrationDTO.getFlatNumber());  
-        flat.setResident(transientResident);
-        Flat persistedFlat = flatDao.save(flat);  // Save Flat first
+            // Encrypt the password before saving
+            String encodedPassword = passwordEncoder.encode(transientResident.getPassword());
+            transientResident.setPassword(encodedPassword);
 
-        
-        transientResident.setFlat(persistedFlat);
+            // Create and persist Flat entity
+            Flat flat = new Flat();
+            flat.setFlatNumber(registrationDTO.getFlatNumber());
+            flat.setResident(transientResident);
+            Flat persistedFlat = flatDao.save(flat);
 
-       
-        Payment newPayment = new Payment();
-        newPayment.setResident(transientResident);  
-        newPayment.setStatus("PENDING");  
-        newPayment.setTotalAmount(1500.0);  
-        newPayment.setPaymentDate(LocalDate.now());
+            // Set flat to resident and save the payment record
+            transientResident.setFlat(persistedFlat);
 
-        
-        paymentDao.save(newPayment);  
+            Payment newPayment = new Payment();
+            newPayment.setResident(transientResident);
+            newPayment.setStatus("PENDING");
+            newPayment.setTotalAmount(1500.0);
+            newPayment.setPaymentDate(LocalDate.now());
+            paymentDao.save(newPayment);
 
-        
-        User persistedResident = userDao.save(transientResident);
+            // Save resident and return response
+            User persistedResident = userDao.save(transientResident);
 
-        return new ApiResponse("Registered new resident with ID: " + persistedResident.getId());
+            return new ApiResponse("Registered new resident with ID: " + persistedResident.getId());
+        } catch (Exception e) {
+            throw new RuntimeException("Registration failed: " + e.getMessage());
+        }
     }
-
 
 
 	@Override
@@ -143,6 +155,22 @@ public class ResidentServiceImple implements ResidentService {
         facilityBookingDao.save(facility);
         return new ApiResponse("Facility booked successfully!");
 	}
+
+
+
+//	@Override
+//	public ResidentLoginResponseDto loginResident(ResidentLoginRequestDto loginDto) {
+//		Optional<User> admin = userDao.findByEmailAndPasswordAndRole(
+//                loginDto.getEmail(), loginDto.getPassword(), "Resident");
+//
+//        if (admin.isPresent()) {
+//            return new ResidentLoginResponseDto("Login Successful!", "dummy-token-123"); 
+//        } else {
+//            throw new RuntimeException("Invalid credentials or not an Resident!");
+//        }
+//	}
+	
+	
 	}
 
 

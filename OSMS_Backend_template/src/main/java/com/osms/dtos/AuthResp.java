@@ -9,8 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AdminLoginRequestDto {
-
-	  private String email;
-	    private String password;
+public class AuthResp {
+	private String message;
+	private String jwt;
 }

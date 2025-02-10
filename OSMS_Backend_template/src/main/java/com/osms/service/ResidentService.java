@@ -2,10 +2,12 @@ package com.osms.service;
 
 import java.util.List;
 
+
 import com.osms.dtos.ApiResponse;
 import com.osms.dtos.DisplayNotificationDto;
 import com.osms.dtos.FacilityBookingDto;
 import com.osms.dtos.PaymentUpdateRequestDto;
+
 import com.osms.dtos.ResidentPaymentDto;
 import com.osms.dtos.ResidentPaymentResponseDto;
 import com.osms.dtos.ResidentRegistrationReqDto;
@@ -24,6 +26,8 @@ public interface ResidentService {
     ApiResponse updatePaymentStatus(PaymentUpdateRequestDto requestDto);
 
 	ApiResponse bookFacility(FacilityBookingDto bookingDto);
+
+	
 
 	
 }

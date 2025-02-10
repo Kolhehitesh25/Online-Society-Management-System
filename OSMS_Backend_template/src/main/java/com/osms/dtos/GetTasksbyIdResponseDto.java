@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class GetTasksbyIdResponseDto {
+	private Long id;
 	 private String description;
 	 private String status;
 }

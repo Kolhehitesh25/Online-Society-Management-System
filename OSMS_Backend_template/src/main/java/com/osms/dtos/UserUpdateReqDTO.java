@@ -1,6 +1,6 @@
 package com.osms.dtos;
 
-import com.osms.pojos.Flat;
+
 import com.osms.pojos.UserRole;
 
 import lombok.Getter;

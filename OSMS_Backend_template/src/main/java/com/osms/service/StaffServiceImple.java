@@ -95,20 +95,14 @@ public class StaffServiceImple implements StaffService{
 	public List<GetTasksbyIdResponseDto> getTasksByAssignedUser(User user) {
 	    List<Tasks> tasks = taskDao.findByAssignedTo(user);
 	    return tasks.stream()
-	            .map(task -> new GetTasksbyIdResponseDto(task.getDescription(), task.getStatus()))
+	            .map(task -> new GetTasksbyIdResponseDto(task.getId(),task.getDescription(), task.getStatus()))
 	            .collect(Collectors.toList());
 	}
 
+	
 
 
 	
-//	@Override
-//	public List<TaskResponseDto> getTaskbyId(Long staffId) {
-//		List<Tasks> tasks = taskDao.findByAssignedTo_Id(staffId);
-//        return tasks.stream()
-//                    .map(task -> modelMapper.map(task, TaskResponseDto.class))
-//                    .collect(Collectors.toList());
-//	}
 
 	
 	}

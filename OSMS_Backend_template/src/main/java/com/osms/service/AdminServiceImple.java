@@ -70,27 +70,7 @@ public class AdminServiceImple implements AdminService {
 		return new ApiResponse("Added new notification with Id" + persistenNotification.getId());
 	}
 
-	@Override
-	public ApiResponse assignTask(AssignTaskDto assignTaskDTO, Long staffId) {
-		Optional<User> staffOpt = userDao.findById(staffId);
-
-		if (staffOpt.isEmpty()) {
-			return new ApiResponse("Staff member not found!");
-		}
-
-		User staff = staffOpt.get();
-
-		if (staff.getRole() != UserRole.CLEANER && staff.getRole() != UserRole.SECURITY) {
-			return new ApiResponse("Invalid staff role! Only Cleaner or Security can be assigned tasks.");
-		}
-
-		Tasks task = new Tasks();
-		task.setDescription(assignTaskDTO.getDescription());
-		task.setStaff(staff);
-		taskDao.save(task);
-
-		return new ApiResponse("Task successfully assigned to staff.");
-	}
+	
 
 	@Override
 	public List<ResidentPaymentResponseDto> getAllResidentsWithPayments() {
@@ -259,9 +239,7 @@ public class AdminServiceImple implements AdminService {
 	    long securityCount = userDao.countByRole(UserRole.SECURITY);
 	    long totalCount = residentCount + securityCount + cleanerCount;
 
-	    // Debug log before querying tasks
-	    System.out.println("Fetching task counts...");
-
+	    
 	    // Count tasks based on status
 	    long pendingTasks = taskDao.countByStatus("pending");
 	    long completedTasks = taskDao.countByStatus("completed");
@@ -305,6 +283,31 @@ public class AdminServiceImple implements AdminService {
 			return new ApiResponse("Complaint not found.");
 		}
 	}
+
+	@Override
+	public ApiResponse assignTask(Long staffId, AssignTaskDto assignTaskDTO) {
+		Optional<User> staffOpt = userDao.findById(staffId);
+
+		if (staffOpt.isEmpty()) {
+			return new ApiResponse("Staff member not found!");
+		}
+
+		User staff = staffOpt.get();
+
+		if (staff.getRole() != UserRole.CLEANER && staff.getRole() != UserRole.SECURITY) {
+			return new ApiResponse("Invalid staff role! Only Cleaner or Security can be assigned tasks.");
+		}
+
+		Tasks task = new Tasks();
+		task.setDescription(assignTaskDTO.getDescription());
+		task.setDuedate(assignTaskDTO.getDueDate());;
+		task.setStaff(staff);
+		taskDao.save(task);
+
+		return new ApiResponse("Task successfully assigned to staff.");
+	}
+
+	
 	
 
 }

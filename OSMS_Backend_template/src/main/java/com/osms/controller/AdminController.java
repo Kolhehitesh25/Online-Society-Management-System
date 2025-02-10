@@ -30,6 +30,7 @@ import com.osms.dtos.SendNotificationDto;
 import com.osms.dtos.StaffDTO;
 
 
+
 @RestController
 @RequestMapping("/admin")
 @CrossOrigin(origins="http://localhost:3000")
@@ -37,6 +38,8 @@ public class AdminController {
 
 	@Autowired
 	private AdminService adminService;
+	
+	
 	
 	@PostMapping("/send-notification")
     public ResponseEntity<?> sendNotification(@RequestBody SendNotificationDto sendNotificationDto) {
@@ -50,19 +53,15 @@ public class AdminController {
         }
     }
 	
-	@PostMapping("/assign-task")
-    public ResponseEntity<ApiResponse> assignTask(
-            @RequestParam Long staffId, 
-            @RequestBody AssignTaskDto assignTaskDTO) {  
-        ApiResponse response = adminService.assignTask(assignTaskDTO, staffId);
-        return ResponseEntity.ok(response);
-    }
+	
+	
 	
 	@GetMapping("/residents-list")
     public ResponseEntity<List<ResidentPaymentResponseDto>> getResidentsWithPayments() {
         List<ResidentPaymentResponseDto> residents = adminService.getAllResidentsWithPayments();
         return ResponseEntity.ok(residents);
     }
+	
 	
 	@GetMapping("/all-bookings")
 	public ResponseEntity<List<FacilityBookingRespDto>> getAllFacilityBookings() {
@@ -147,7 +146,7 @@ public class AdminController {
 	        return adminService.getStaff();
 	    }
 	 
-
+	 
 	 @GetMapping("/dashboard-stats")
 	    public ResponseEntity<Map<String, Long>> getDashboardStats() {
 	        Map<String, Long> stats = adminService.getUserStats();
@@ -162,6 +161,7 @@ public class AdminController {
 		}
 	    
 	    
+	    
 	    @PutMapping("/resolved/{complaintId}")
 	    public ResponseEntity<?> ResolvedComplaint(@PathVariable Long complaintId) {
 	        try {
@@ -172,10 +172,15 @@ public class AdminController {
 	        }
 	    }
 	    
+
 	    
-	    
-	    
-	    
+	    @PostMapping("assign-task")
+	    public ResponseEntity<ApiResponse> assignTask(@RequestParam Long staffId,
+	    		@RequestBody AssignTaskDto assignTaskDto){
+					return ResponseEntity.ok(adminService.assignTask(staffId, assignTaskDto));
+	    	
+	    }
+	   
 	
 }
 

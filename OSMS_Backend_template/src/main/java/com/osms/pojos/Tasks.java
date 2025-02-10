@@ -33,5 +33,7 @@ public class Tasks extends BaseEntity{
     private String status="pending";  // "PENDING" or "DONE"
 
     private LocalDate assignedDate=LocalDate.now(); 
+    
+    private LocalDate Duedate;
 }
 

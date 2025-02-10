@@ -5,15 +5,15 @@ import {
   FaWallet,
   FaCalendarAlt,
   FaCommentDots,
-  FaBell,
   FaBellSlash,
 } from "react-icons/fa";
-import { Link, useLoaderData, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Bell } from "lucide-react";
+
 const ResidentSideBar = () => {
   const location = useLocation();
   const handlePaymentClick = () => {
-    console.log("Payment Started"); // ✅ Log when clicking "Pay Maintenance"
+    console.log("Payment Started");
   };
 
   return (
@@ -39,10 +39,10 @@ const ResidentSideBar = () => {
           Resident
         </h2>
         <Nav className="flex-column">
-
           <Nav.Link
             as={Link}
             to="/resident"
+            key="dashboard"
             className={
               location.pathname === "/resident" ? "text-warning" : "text-light"
             }
@@ -51,11 +51,10 @@ const ResidentSideBar = () => {
           </Nav.Link>
           <hr />
 
-         
-
           <Nav.Link
             as={Link}
             to="/resident/book-facility"
+            key="book-facility"
             className={
               location.pathname === "/resident/book-facility"
                 ? "text-warning"
@@ -68,6 +67,7 @@ const ResidentSideBar = () => {
           <Nav.Link
             as={Link}
             to="/resident/complaints"
+            key="complaints"
             className={
               location.pathname === "/resident/complaints"
                 ? "text-warning"
@@ -76,29 +76,31 @@ const ResidentSideBar = () => {
           >
             <FaCommentDots className="me-2" /> Complaints
           </Nav.Link>
+
           <Nav.Link
             as={Link}
             to="/resident/notification"
+            key="notifications"
             className={
-              location.pathname === "/resident/notifications"
+              location.pathname === "/resident/notification"
                 ? "text-warning"
                 : "text-light"
             }
           >
             <FaBellSlash className="me-2" /> View Notification
+          </Nav.Link>
 
-<Bell color="red" size={24} repeatCount={4} />
-       
+          <Bell color="red" size={24} className="mt-3 ms-3" />
+
           <Nav.Link
             as={Link}
             to="/resident/pay-bill"
+            key="pay-bill"
             className="text-light pb-3"
-            onClick={handlePaymentClick} // ✅ Added onClick
+            onClick={handlePaymentClick}
           >
             <FaWallet className="me-2" /> Pay Maintenance
           </Nav.Link>
-         
-          
         </Nav>
       </div>
     </div>

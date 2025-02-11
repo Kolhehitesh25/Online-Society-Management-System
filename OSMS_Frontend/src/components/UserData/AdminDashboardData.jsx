@@ -1,23 +1,27 @@
 import React from "react";
 import { TypeAnimation } from "react-type-animation";
-import StatisticBar from "../StatisticBar"
-import Taskpiechart from "../Taskpiechart"
+import StatisticBar from "../StatisticBar";
+import Taskpiechart from "../Taskpiechart";
+import { useNavigate } from "react-router-dom";
 const AdminDashboardData = () => {
+  const navigate = useNavigate();
+  const storedUser = JSON.parse(localStorage.getItem("user"));
   return (
     <>
-    
       <div className="w-75 mt-3 p-4 bg-white rounded">
         <h3
           style={{
             color: " rgba(73, 25, 7, 0.5)",
           }}
-        >  
+        >
           <TypeAnimation
             sequence={[
-              "Hello , Admin",
+              "Hello ",
+              1000,
+              storedUser.fullName,
               1000,
 
-              " Welcome to Your Dashboard ",
+              " Welcome to Residify.. ",
               3000,
             ]}
             speed={30}
@@ -48,6 +52,7 @@ const AdminDashboardData = () => {
               width: "180px",
               marginRight: "20px",
             }}
+            onClick={() => navigate("/admin/residents")}
             onMouseEnter={(e) => (e.target.style.backgroundColor = "	#808080")}
             onMouseLeave={(e) => (e.target.style.backgroundColor = "#C0C0C0")}
           >
@@ -58,6 +63,7 @@ const AdminDashboardData = () => {
             style={{ backgroundColor: "#C0C0C0", width: "180px" }}
             onMouseEnter={(e) => (e.target.style.backgroundColor = "	#808080")}
             onMouseLeave={(e) => (e.target.style.backgroundColor = "#C0C0C0")}
+            onClick={() => navigate("/admin/staffs")}
           >
             Manage Staff
           </button>
@@ -72,7 +78,7 @@ const AdminDashboardData = () => {
           Statistics Overview
         </h3>
         <div className="row">
-          <div className="col-md-6">
+          <div className="col-md-6" style={{ marginLeft: "60px" }}>
             <StatisticBar />
           </div>
           {/* pie chart */}
@@ -107,7 +113,7 @@ const AdminDashboardData = () => {
           <button className="btn btn-info " style={{ marginRight: "20px" }}>
             View Logs
           </button>
-          <button className="btn btn-secondary">Export Logs</button>
+          
         </div>
       </div>
     </>

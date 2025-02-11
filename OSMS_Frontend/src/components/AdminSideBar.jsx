@@ -1,19 +1,21 @@
-import React from "react";
+import React ,{useState} from "react";
 
 import { Nav } from "react-bootstrap";
 import {
   FaHome,
   FaBellSlash,
   FaUser,
-  FaMoneyBill,
   FaCommentDots,
-  FaCalendarCheck,
   FaTasks,
+  FaWallet,
+  FaCalendarAlt,
 } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
 
+
 const AdminSideBar = () => {
   const location = useLocation();
+  
 
   return (
     <div className="d-flex ">
@@ -91,10 +93,15 @@ const AdminSideBar = () => {
                 ? "text-warning"
                 : "text-light"
             }>
-            <FaTasks className="me-2" /> Financial Record
+            <FaWallet className="me-2" /> Financial Record
           </Nav.Link>
 
-          <Nav.Link className="text-light pb-3">
+          <Nav.Link  as={Link} to="/admin/complaints" className={
+            location.pathname === "/admin/complaints"
+            ? "text-warning"
+            : "text-light"
+            
+          }>
             <FaCommentDots className="me-2" /> Complaints
           </Nav.Link>
 
@@ -103,15 +110,26 @@ const AdminSideBar = () => {
                 ? "text-warning"
                 : "text-light"
             }>
-            <FaTasks className="me-2" /> Facility Booking
+            <FaCalendarAlt className="me-2" /> Facility Booking
+          </Nav.Link>
+         
+          <Nav.Link  as={Link} to="/admin/send-notification"
+          className={
+            location.pathname === "/admin/send-notification"
+              ? "text-warning"
+              : "text-light"
+          }
+          
+       
+            style={{ cursor: "pointer" }}
+          >
+            <FaBellSlash className="me-2" /> Send Notification
           </Nav.Link>
 
-          <Nav.Link className="text-light pb-3">
-            <FaBellSlash className="me-2" />
-            Send Notification
-          </Nav.Link>
         </Nav>
+
       </div>
+    
     </div>
   );
 };

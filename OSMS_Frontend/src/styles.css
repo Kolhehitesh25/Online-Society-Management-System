@@ -19,8 +19,8 @@ color: aqua;
 }
 
 .dropdown-item:hover {
-  background-color: #343a40; /* Dark background on hover */
-  color: #baedef !important;
+  background-color: #393c3f; /* Dark background on hover */
+  color: #4f9da0 !important;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -46,3 +46,23 @@ color: aqua;
   padding-top: 4px;
 
 }
+
+/* dropdown in register here link */
+
+.custom-dropdown {
+  background-color: #f8f9fa; 
+  border-radius: 5px;
+}
+
+.custom-dropdown-item {
+  color: #007bff !important; 
+  font-weight: bold;
+}
+
+
+
+.custom-dropdown-item:hover {
+  background-color: grey !important;
+  color: white !important; 
+}
+

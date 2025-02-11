@@ -1,5 +1,7 @@
 package com.osms.dtos;
 
+import com.osms.pojos.UserRole;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,5 +17,5 @@ public class StaffRegistrationReqDto {
     private String email;
     private String password;
     private String mobileNo;
-    private String role;
+    private UserRole role;
 }

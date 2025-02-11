@@ -1,11 +1,14 @@
 package com.osms.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.osms.pojos.Tasks;
+import com.osms.pojos.User;
 
 
 public interface TaskDao extends JpaRepository<Tasks, Long> {
@@ -17,4 +20,17 @@ public interface TaskDao extends JpaRepository<Tasks, Long> {
 	    List<Tasks> findTasksForSecurity();
 
 	List<Tasks> findByStatus(String string);
+
+
+	@Query("SELECT t FROM Tasks t WHERE t.staff = :user")
+    List<Tasks> findByAssignedTo(@Param("user") User user);
+
+	long countByStatus(String status);
+
+
+	
+//	@Query("SELECT COUNT(t) FROM Task t WHERE t.status = :status")
+//	long countTasksByStatus(@Param("status") String status);
+
+
 }

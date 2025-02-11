@@ -1,21 +1,29 @@
-import React from 'react';
-import '../styles.css';
-import CommonNavbar from './CommonNavbar';
-import ResidentSidebar from './ResidentSidebar';
-
+import React from "react";
+import { Outlet } from "react-router-dom";
+import "../styles.css";
+import CommonNavbar from "./CommonNavbar";
+import ResidentSidebar from "./ResidentSidebar";
 const ResidentDashboard = () => {
-  
   return (
     <>
-    <CommonNavbar/>
-    <div className="d-flex" style={{ height: '100vh' }}>
-      <ResidentSidebar/>
-    <div className="dashboard container d-flex flex-column  justify-content-center align-items-center">
-      <h2>Resident Dashboard</h2>
-      <br></br>
-      <p>Welcome, Resident! You can view society updates here.</p>
+       <CommonNavbar />
+      <ResidentSidebar />
+      <div
+        className="container-fluid "
+        style={{ marginTop: "70px", overflowX: "hidden"  }}
+      >
+        <div className="row">
+          {/* Dashboard Content */}
+          <div
+            className="col-md-9 offset-md-3  d-flex flex-column justify-content-center align-items-center text-center"
+            style={{marginLeft:'300px'}}
+          >
+            <Outlet/>
+              
     </div>
-    </div>
+
+        </div>
+      </div>
     </>
   );
 };

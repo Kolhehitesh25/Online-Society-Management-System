@@ -1,17 +1,83 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import registerbg from "../images/loginback.avif";
+import { toast, ToastContainer } from "react-toastify";
+import staffService from "../services/StaffRegisterService";
+import { useNavigate } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
 
 const StaffRegister = () => {
-  const [role, setRole] = useState("security");
+  const [role, setRole] = useState("SECURITY"); // Default role
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mobile, setMobileno] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const validateFields = () => {
+    if (name.trim().length < 3) {
+      toast.error("Name must be at least 3 characters long.");
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Enter a valid email address.");
+      return false;
+    }
+
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters long.");
+      return false;
+    }
+
+    const mobileRegex = /^\d{10}$/;
+    if (!mobileRegex.test(mobile)) {
+      toast.error("Mobile number must be exactly 10 digits.");
+      return false;
+    }
+
+    if (!role) {
+      toast.error("Please select a role.");
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Registration successful for ${role}`);
+
+    if (!validateFields()) return;
+
+    const staffData = {
+      fullName: name,
+      email: email,
+      mobileNo: mobile,
+      password: password,
+      role: role,
+    };
+
+    console.log("Staff Data being sent:", staffData);
+
+    setLoading(true);
+
+    try {
+      await staffService.registerStaff(staffData);
+      toast.success("Registered Successfully as Staff");
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
+    } catch (error) {
+      if (error.response && error.response.status === 409) {
+        toast.error("Email already exists. Please use a different email.");
+      } else {
+        toast.error("Registration failed. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -34,7 +100,9 @@ const StaffRegister = () => {
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
         }}
       >
-        <h2 className="text-center mb-4"><em>Staff</em> Registration</h2>
+        <h2 className="text-center mb-4">
+          <em>Staff</em> Registration
+        </h2>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
@@ -107,9 +175,10 @@ const StaffRegister = () => {
               id="role"
               value={role}
               onChange={(e) => setRole(e.target.value)}
+              required
             >
-              <option value="cleaner">Cleaner</option>
-              <option value="security">Security</option>
+              <option value="SECURITY">Security</option>
+              <option value="CLEANER">Cleaner</option>
             </select>
           </div>
 
@@ -136,12 +205,14 @@ const StaffRegister = () => {
                 (e.target.style.background =
                   "linear-gradient(135deg, #00b4db, #0083b0)")
               }
+              disabled={loading}
             >
-              Register
+              {loading ? "Registering..." : "Register"}
             </button>
           </div>
         </form>
       </div>
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };

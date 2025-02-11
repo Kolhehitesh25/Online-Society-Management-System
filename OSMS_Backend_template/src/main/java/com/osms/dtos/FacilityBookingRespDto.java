@@ -13,10 +13,11 @@ import lombok.Setter;
 @AllArgsConstructor
 public class FacilityBookingRespDto {
 
+	private Long id;
 	private String facilityName;
     private LocalDate fromDateTime;
     private LocalDate toDateTime;
     private String status;
-    private String residentName;  
-    private String residentEmail;
+    private String fullName;  
+    private String email;
 }

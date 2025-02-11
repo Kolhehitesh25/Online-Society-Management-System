@@ -174,7 +174,7 @@ public class AdminController {
 	    
 
 	    
-	    @PostMapping("assign-task")
+	    @PostMapping("/assign-task")
 	    public ResponseEntity<ApiResponse> assignTask(@RequestParam Long staffId,
 	    		@RequestBody AssignTaskDto assignTaskDto){
 					return ResponseEntity.ok(adminService.assignTask(staffId, assignTaskDto));

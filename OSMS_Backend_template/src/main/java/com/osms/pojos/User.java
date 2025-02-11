@@ -38,7 +38,9 @@ public class User extends BaseEntity {
 	
 	private Flat flat;  
     private boolean status = true;
+
     
     private String passwordResetToken;
+
 	
 }

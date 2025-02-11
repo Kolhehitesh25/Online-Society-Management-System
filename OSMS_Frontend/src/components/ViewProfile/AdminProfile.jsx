@@ -12,5 +12,5 @@ const AdminProfile = ({user}) => {
     </div>
   )
 }
-
+//Admin
 export default AdminProfile

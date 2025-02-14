@@ -13,9 +13,7 @@ const Logout = () => {
     localStorage.removeItem("user");
     
 
-   
 
-    // Redirect to login after 2 seconds
     setTimeout(() => {
       console.log("Navigating to login...");
       navigate("/home");

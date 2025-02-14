@@ -67,34 +67,7 @@ const ResidentDashboardData = () => {
       </div>
    
 
-    <div
-      className="w-75 mt-3 p-4 shadow bg-white rounded"
-      style={{ height: "260px" }}
-    >
-      <h3 className="mb-4" style={{ color: "teal" }}>
-        Manage tasks
-      </h3>
-    
-<span style={{ color: "green", fontSize: "1.2rem" }}>
-  Click below to view tasks
-</span>
-
-      <div className="d-flex justify-content-center mt-5">
-        <button
-          className="btn"
-          style={{
-            backgroundColor: "#C0C0C0",
-            width: "180px",
-            marginRight: "20px",
-          }}
-          onClick={() => navigate("/staff/view-task")}
-          onMouseEnter={(e) => (e.target.style.backgroundColor = "#808080")}
-          onMouseLeave={(e) => (e.target.style.backgroundColor = "#C0C0C0")}
-        >
-          View
-        </button>
-      </div>
-    </div>
+   
  
   </>
   )

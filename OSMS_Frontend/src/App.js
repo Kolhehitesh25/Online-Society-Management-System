@@ -30,12 +30,13 @@ import RaiseComplaint from "./components/RaiseComplaint";
 import ResidentDashboardData from "./components/UserData/ResidentDashboardData";
 import BookFacility from "./components/BookFacility";
 import ViewNotification from "./components/ViewNotification";
-import PayBill from "./components/PayBill"; // ✅ Import PayBill
+import PayBill from "./components/PayBill"; // 
 import StaffDashboardData from "./components/UserData/StaffDashboardData";
 import ViewTask from "./components/ViewTask";
 import EntryExit from "./components/EntryExit";
 
 function App() {
+  
   return (
     <div className="App">
       <ToastContainer position="top-center" autoClose={1500} />

@@ -90,7 +90,6 @@ const CommonNavbar = () => {
   };
   
   
-  
 
   return (
     <div className="main-content flex-grow-1">

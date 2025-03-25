@@ -39,11 +39,12 @@ public class AdminController {
 	@Autowired
 	private AdminService adminService;
 	
-	
+
 	
 	@PostMapping("/send-notification")
     public ResponseEntity<?> sendNotification(@RequestBody SendNotificationDto sendNotificationDto) {
         try {
+        	
         	return ResponseEntity.status(HttpStatus.CREATED)
                      .body(adminService.sendNotification(sendNotificationDto));
         }
@@ -145,8 +146,7 @@ public class AdminController {
 	    public List<StaffDTO> getStaff() {
 	        return adminService.getStaff();
 	    }
-	 
-	 
+	
 	 @GetMapping("/dashboard-stats")
 	    public ResponseEntity<Map<String, Long>> getDashboardStats() {
 	        Map<String, Long> stats = adminService.getUserStats();

@@ -5,6 +5,7 @@ const AdminProfile = ({ user }) => {
 
   return (
     <div>
+
             <div style={{ textAlign: 'center', padding: '10px' ,backgroundColor:"orange" ,opacity:'0.9',borderRadius:'30px'}}>
   
   <p><strong>Role:</strong> {user.role}</p>
@@ -16,3 +17,4 @@ const AdminProfile = ({ user }) => {
 };
 
 export default AdminProfile;
+

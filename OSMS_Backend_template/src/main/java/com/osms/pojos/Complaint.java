@@ -33,5 +33,5 @@ public class Complaint extends BaseEntity {
 	private User resident;
 	
 	 @Column(name="status")
-	    private String status="Pending";
+	 private String status="Pending";
 }

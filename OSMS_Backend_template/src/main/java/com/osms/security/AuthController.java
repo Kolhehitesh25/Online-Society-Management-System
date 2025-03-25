@@ -79,6 +79,7 @@ public class AuthController {
 		return ResponseEntity.ok(response);
 	}
 
+	
 	@PostMapping("/forgot-password")
 	public ApiResponse forgotPassword(@RequestBody ForgotPasswordRequestDTO request) {
 		String email = request.getEmail();

@@ -76,6 +76,7 @@ public class AdminServiceImple implements AdminService {
 	public List<ResidentPaymentResponseDto> getAllResidentsWithPayments() {
 		List<User> residents = userDao.findByRole(UserRole.RESIDENT); // Fetch all residents
 
+		
 		return residents.stream().map(resident -> {
 			Optional<Payment> paymentOpt = paymentDao.findByResident(resident);
 			Payment payment = paymentOpt.orElse(new Payment(resident));
